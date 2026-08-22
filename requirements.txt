@@ -1,0 +1,6 @@
+langchain 
+langchain-huggingface
+transformers 
+duckduckgo-search 
+python-dotenv 
+beautifulsoup4
