@@ -1,6 +1,9 @@
-langchain 
+langchain
 langchain-huggingface
-transformers 
-duckduckgo-search 
-python-dotenv 
+transformers
+torch
+huggingface_hub
+duckduckgo-search
+python-dotenv
 beautifulsoup4
+openai
