@@ -202,3 +202,23 @@ _Last update: 2026-08-27T23:19:25+02:00_
   - Add automated API tests with a mocked `FirstAgent` to avoid loading the local model in CI.
 
 _Last update: 2026-08-27T23:53:56+02:00_
+
+---
+
+### ID: issue-011
+- Date: 2026-08-28T00:54:45+02:00
+- Severity: Low
+- Affected files:
+  - agent_api.py
+  - streamlit_frontend.py
+- Description: Running `uvicorn` manually produced `[WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions`.
+- Action taken:
+  - Checked Windows TCP port exclusions; port `8000` was not reserved.
+  - Verified `GET http://127.0.0.1:8000/health` returned `{"status":"ok","model_id":"HuggingFaceTB/SmolLM2-360M-Instruct"}`.
+  - Confirmed with `netstat -ano | findstr :8000` that `127.0.0.1:8000` was already listening under PID `88080`.
+- Status: Monitoring
+- Notes / Next steps:
+  - If starting a fresh API server, stop the existing process first or use a different port such as `8001`.
+  - If using a different API port, update Streamlit's sidebar API URL or set `AGENT_API_URL`.
+
+_Last update: 2026-08-28T00:54:45+02:00_
