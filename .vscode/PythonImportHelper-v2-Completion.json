@@ -1,0 +1,149 @@
+[
+    {
+        "label": "load_dotenv",
+        "importPath": "dotenv",
+        "description": "dotenv",
+        "isExtraImport": true,
+        "detail": "dotenv",
+        "documentation": {}
+    },
+    {
+        "label": "load_dotenv",
+        "importPath": "dotenv",
+        "description": "dotenv",
+        "isExtraImport": true,
+        "detail": "dotenv",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "login",
+        "importPath": "huggingface_hub",
+        "description": "huggingface_hub",
+        "isExtraImport": true,
+        "detail": "huggingface_hub",
+        "documentation": {}
+    },
+    {
+        "label": "login",
+        "importPath": "huggingface_hub",
+        "description": "huggingface_hub",
+        "isExtraImport": true,
+        "detail": "huggingface_hub",
+        "documentation": {}
+    },
+    {
+        "label": "pipeline",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
+        "label": "pipeline",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
+        "label": "streamlit",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "streamlit",
+        "description": "streamlit",
+        "detail": "streamlit",
+        "documentation": {}
+    },
+    {
+        "label": "hf_token",
+        "kind": 5,
+        "importPath": "first_agent",
+        "description": "first_agent",
+        "peekOfCode": "hf_token = os.getenv(\"HF_TOKEN\")\nif hf_token:\n    login(token=hf_token)\nelse:\n    print(\"ℹ️  No HF_TOKEN set — continuing without login (fine for public models).\\n\")\n# 2. A small, free instruct model that actually runs on a laptop CPU\n#    (DeepSeek-V4-Pro is a 1.57T-parameter server-scale model — way too big to load here)\nMODEL_ID = \"HuggingFaceTB/SmolLM2-360M-Instruct\"\n# 3. Create a local text-generation pipeline (chat-capable)\n#    Note: \"text2text-generation\" was removed in transformers v5 — \"text-generation\"",
+        "detail": "first_agent",
+        "documentation": {}
+    },
+    {
+        "label": "MODEL_ID",
+        "kind": 5,
+        "importPath": "first_agent",
+        "description": "first_agent",
+        "peekOfCode": "MODEL_ID = \"HuggingFaceTB/SmolLM2-360M-Instruct\"\n# 3. Create a local text-generation pipeline (chat-capable)\n#    Note: \"text2text-generation\" was removed in transformers v5 — \"text-generation\"\n#    now handles both plain and chat-style generation.\nprint(f\"⏳ Loading {MODEL_ID} (first run downloads the model, ~1-2 min)...\")\npipe = pipeline(\n    task=\"text-generation\",\n    model=MODEL_ID,\n    dtype=\"auto\",\n)",
+        "detail": "first_agent",
+        "documentation": {}
+    },
+    {
+        "label": "pipe",
+        "kind": 5,
+        "importPath": "first_agent",
+        "description": "first_agent",
+        "peekOfCode": "pipe = pipeline(\n    task=\"text-generation\",\n    model=MODEL_ID,\n    dtype=\"auto\",\n)\nprint(\"✅ Agent ready! Type a question, or 'quit' to stop.\\n\")\n# Chat history, in the {\"role\": ..., \"content\": ...} format the pipeline expects\nchat = [\n    {\"role\": \"system\", \"content\": \"You are a helpful, concise assistant.\"}\n]",
+        "detail": "first_agent",
+        "documentation": {}
+    },
+    {
+        "label": "chat",
+        "kind": 5,
+        "importPath": "first_agent",
+        "description": "first_agent",
+        "peekOfCode": "chat = [\n    {\"role\": \"system\", \"content\": \"You are a helpful, concise assistant.\"}\n]\nwhile True:\n    try:\n        user_input = input(\"> \").strip()\n        if user_input.lower() in {\"quit\", \"exit\"}:\n            print(\"Goodbye!\")\n            break\n        if not user_input:",
+        "detail": "first_agent",
+        "documentation": {}
+    },
+    {
+        "label": "get_pipeline",
+        "kind": 2,
+        "importPath": "streamlit_frontend",
+        "description": "streamlit_frontend",
+        "peekOfCode": "def get_pipeline():\n    \"\"\"Create and cache the transformers pipeline so model is loaded just once.\"\"\"\n    return pipeline(task=\"text-generation\", model=MODEL_ID, dtype=\"auto\")\nst.set_page_config(page_title=\"First Agent (Streamlit)\", layout=\"wide\")\nst.title(\"First Agent — Streamlit frontend\")\nst.markdown(\"A simple Streamlit UI for interacting with the `first_agent.py` text-generation agent.\")\n# Initialize session state for chat history\nif \"chat\" not in st.session_state:\n    st.session_state.chat = [{\"role\": \"system\", \"content\": \"You are a helpful, concise assistant.\"}]\ncol1, col2 = st.columns([3, 1])",
+        "detail": "streamlit_frontend",
+        "documentation": {}
+    },
+    {
+        "label": "handle_send",
+        "kind": 2,
+        "importPath": "streamlit_frontend",
+        "description": "streamlit_frontend",
+        "peekOfCode": "def handle_send():\n    user_text = st.session_state.get(\"user_input\", \"\").strip()\n    if not user_text:\n        # Nothing to do\n        return\n    # Append user message to chat\n    chat = st.session_state.get(\"chat\", [])\n    chat.append({\"role\": \"user\", \"content\": user_text})\n    st.session_state.chat = chat\n    # Call the model",
+        "detail": "streamlit_frontend",
+        "documentation": {}
+    },
+    {
+        "label": "hf_token",
+        "kind": 5,
+        "importPath": "streamlit_frontend",
+        "description": "streamlit_frontend",
+        "peekOfCode": "hf_token = os.getenv(\"HF_TOKEN\")\nif hf_token:\n    try:\n        login(token=hf_token)\n    except Exception as e:\n        st.warning(f\"HF login failed: {e}\")\n# Friendly check for torchvision — Streamlit shows a warning and stops so the user\n# sees a clear action to fix the missing dependency.\ntry:\n    import torchvision  # noqa: F401",
+        "detail": "streamlit_frontend",
+        "documentation": {}
+    },
+    {
+        "label": "MODEL_ID",
+        "kind": 5,
+        "importPath": "streamlit_frontend",
+        "description": "streamlit_frontend",
+        "peekOfCode": "MODEL_ID = \"HuggingFaceTB/SmolLM2-360M-Instruct\"\n@st.cache_resource\ndef get_pipeline():\n    \"\"\"Create and cache the transformers pipeline so model is loaded just once.\"\"\"\n    return pipeline(task=\"text-generation\", model=MODEL_ID, dtype=\"auto\")\nst.set_page_config(page_title=\"First Agent (Streamlit)\", layout=\"wide\")\nst.title(\"First Agent — Streamlit frontend\")\nst.markdown(\"A simple Streamlit UI for interacting with the `first_agent.py` text-generation agent.\")\n# Initialize session state for chat history\nif \"chat\" not in st.session_state:",
+        "detail": "streamlit_frontend",
+        "documentation": {}
+    }
+]

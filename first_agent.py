@@ -1,7 +1,18 @@
 from dotenv import load_dotenv
 import os
+import sys
 from huggingface_hub import login
 from transformers import pipeline
+
+# Friendly check for torchvision, which some models/pipelines import indirectly.
+# If missing, give a clear install hint and exit early to avoid confusing tracebacks.
+try:
+    import torchvision  # noqa: F401
+except ImportError:
+    print("ERROR: Missing dependency 'torchvision'. Some models or pipeline code require torchvision.")
+    print("If you're on a CPU-only machine, run:\n  pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu")
+    print("Or use the command from https://pytorch.org/get-started/locally/ appropriate for your platform.")
+    sys.exit(1)
 
 # 1. Load .env file (contains your HF_TOKEN) — optional for public models
 load_dotenv()
@@ -42,11 +53,49 @@ while True:
             continue
 
         chat.append({"role": "user", "content": user_input})
-        response = pipe(chat, max_new_tokens=200)
-        chat = response[0]["generated_text"]  # full history, including the new reply
-        reply = chat[-1]["content"]
+        from time import perf_counter
+        start = perf_counter()
+        try:
+            response = pipe(chat, max_new_tokens=200)
+        except Exception as e:
+            print(f"Model error: {e}")
+            continue
+        elapsed = perf_counter() - start
+
+        # Robustly parse the pipeline response. Different transformers versions/models
+        # return different structures: sometimes `generated_text` is a list (chat history),
+        # sometimes it's a single string. Handle both.
+        reply = None
+        try:
+            first = response[0] if isinstance(response, list) else response
+            gen = None
+            if isinstance(first, dict):
+                gen = first.get("generated_text") or first.get("text") or first.get("summary_text")
+            else:
+                gen = first
+
+            if isinstance(gen, list):
+                # full chat history returned
+                chat = gen
+                last = chat[-1]
+                if isinstance(last, dict):
+                    reply = last.get("content") or last.get("text")
+                else:
+                    reply = str(last)
+            elif isinstance(gen, str):
+                # single-string reply; append as assistant message
+                reply = gen
+                chat.append({"role": "assistant", "content": reply})
+            else:
+                # fallback: stringify response
+                reply = str(response)
+                chat.append({"role": "assistant", "content": reply})
+        except Exception as e:
+            reply = f"(Could not parse model response: {e})"
+            chat.append({"role": "assistant", "content": reply})
 
         print(f"\n🤖 Agent: {reply}\n")
+        print(f"(Response time: {elapsed:.2f} seconds)\n")
 
     except KeyboardInterrupt:
         print("\n(Stopped) Goodbye!")

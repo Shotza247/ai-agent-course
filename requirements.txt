@@ -1,9 +1,12 @@
 langchain
 langchain-huggingface
 transformers
-torch
+# Pinned to known-compatible CPU builds — adjust if you need CUDA versions
+torch==2.10.0
+torchvision==0.25.0
 huggingface_hub
 duckduckgo-search
 python-dotenv
 beautifulsoup4
 openai
+streamlit
