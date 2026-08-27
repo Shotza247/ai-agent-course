@@ -120,3 +120,40 @@ Format (each entry):
 ---
 
 _Last update: 2026-08-24T08:01:22+02:00_
+
+---
+
+### ID: issue-007
+- Date: 2026-08-25T20:54:35+02:00
+- Severity: Medium
+- Affected files:
+  - streamlit_frontend.py
+- Description: Streamlit raised StreamlitAPIException: "st.session_state.user_input cannot be modified after the widget with key 'user_input' is instantiated." This occurred because the code attempted to assign to st.session_state.user_input after creating the text_area widget.
+- Action taken:
+  - Refactored the Streamlit UI so the Send button uses an on_click callback (handle_send) which performs the model call, updates chat state, records response time, and clears the input. Mutating widget-bound session_state keys inside a button callback avoids the StreamlitAPIException.
+  - Display the measured response time (seconds) alongside the assistant reply using st.session_state.last_elapsed.
+- Status: Fixed
+- Notes / Next steps:
+  - If a nicer UX is desired (live spinner or progress), consider moving to a form submit or an async background worker with progress updates; current approach shows elapsed time after completion.
+  - Add a unit test or CI smoke test that verifies the Streamlit script runs and that session_state mutations do not raise exceptions.
+
+_Last update: 2026-08-25T20:54:35+02:00_
+
+---
+
+### ID: issue-008
+- Date: 2026-08-26T16:19:00+02:00
+- Severity: Medium
+- Affected files:
+  - streamlit_frontend.py
+- Description: The Streamlit UI had a duplicate chat rendering section and a response timer display that was cluttering the chat and creating repeated output blocks. This was a styling/UX issue caused by repeated rendering blocks inserted during earlier fixes.
+- Action taken:
+  - Removed the duplicate "Show the chat history" block in `streamlit_frontend.py`.
+  - Removed the timer logic from the assistant reply rendering so responses display cleanly without timing metadata.
+  - Kept the callback-based send flow and input clearing to avoid Streamlit session-state API errors.
+- Status: Fixed
+- Notes / Next steps:
+  - Keep the UI simple and avoid duplicated render sections; if timing is needed again, add it in a single place only.
+  - Consider a small UI smoke test to catch duplicate block regressions.
+
+_Last update: 2026-08-26T16:19:00+02:00_
