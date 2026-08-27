@@ -157,3 +157,48 @@ _Last update: 2026-08-25T20:54:35+02:00_
   - Consider a small UI smoke test to catch duplicate block regressions.
 
 _Last update: 2026-08-26T16:19:00+02:00_
+
+---
+
+### ID: issue-009
+- Date: 2026-08-27T23:19:25+02:00
+- Severity: Medium
+- Affected files:
+  - first_agent.py
+  - streamlit_frontend.py
+  - README.md
+- Description: `streamlit_frontend.py` duplicated the model-loading, chat, and response-parsing behavior from `first_agent.py` instead of using it. `first_agent.py` also behaved like a CLI script rather than an import-safe reusable service layer, which would make future FastAPI, React, or RAG integrations awkward.
+- Action taken:
+  - Refactored `first_agent.py` into a reusable service layer with `FirstAgent`, `AgentResponse`, `initial_chat()`, lazy model loading, shared response parsing, and a guarded CLI entrypoint.
+  - Updated `streamlit_frontend.py` to call the shared `FirstAgent` service instead of creating its own transformers pipeline.
+  - Updated `README.md` to document service-layer reuse from other applications.
+- Status: Fixed
+- Notes / Next steps:
+  - Add focused tests for `parse_pipeline_response()` using mocked transformers outputs.
+  - When adding FastAPI, call `FirstAgent` from an API wrapper rather than putting HTTP concerns inside `first_agent.py`.
+
+_Last update: 2026-08-27T23:19:25+02:00_
+
+---
+
+### ID: issue-010
+- Date: 2026-08-27T23:53:56+02:00
+- Severity: Medium
+- Affected files:
+  - agent_api.py
+  - streamlit_frontend.py
+  - requirements.txt
+  - README.md
+- Description: The project needed an HTTP boundary so the reusable `FirstAgent` service could be consumed by Streamlit now and by future JavaScript/React applications later.
+- Action taken:
+  - Added `agent_api.py`, a FastAPI app with `GET /health` and stateless `POST /chat` endpoints around `FirstAgent`.
+  - Updated `streamlit_frontend.py` to use Streamlit chat elements and call the FastAPI `/chat` endpoint over HTTP.
+  - Added FastAPI, uvicorn, and requests dependencies.
+  - Updated `README.md` with API and Streamlit startup instructions.
+- Status: Fixed
+- Notes / Next steps:
+  - Add a React client against the same `/chat` contract when ready.
+  - Consider streaming responses later with Server-Sent Events or WebSockets.
+  - Add automated API tests with a mocked `FirstAgent` to avoid loading the local model in CI.
+
+_Last update: 2026-08-27T23:53:56+02:00_

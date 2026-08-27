@@ -1,116 +1,81 @@
+from __future__ import annotations
+
 import os
-from dotenv import load_dotenv
-from huggingface_hub import login
-from transformers import pipeline
+from typing import Any
+
+import requests
 import streamlit as st
 
-# Load environment and optional HF token
-load_dotenv()
-hf_token = os.getenv("HF_TOKEN")
-if hf_token:
-    try:
-        login(token=hf_token)
-    except Exception as e:
-        st.warning(f"HF login failed: {e}")
+from first_agent import DEFAULT_MODEL_ID, initial_chat
 
-# Friendly check for torchvision — Streamlit shows a warning and stops so the user
-# sees a clear action to fix the missing dependency.
-try:
-    import torchvision  # noqa: F401
-except Exception:
-    st.warning("Missing dependency 'torchvision'. Install it with:\n  pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu\nOr see https://pytorch.org/get-started/locally/ for platform-specific instructions.")
-    st.stop()
+DEFAULT_API_URL = os.getenv("AGENT_API_URL", "http://localhost:8000")
 
-MODEL_ID = "HuggingFaceTB/SmolLM2-360M-Instruct"
 
-@st.cache_resource
-def get_pipeline():
-    """Create and cache the transformers pipeline so model is loaded just once."""
-    return pipeline(task="text-generation", model=MODEL_ID, dtype="auto")
+def _api_url() -> str:
+    return st.session_state.api_url.rstrip("/")
 
-st.set_page_config(page_title="First Agent (Streamlit)", layout="wide")
-st.title("First Agent — Streamlit frontend")
-st.markdown("A simple Streamlit UI for interacting with the `first_agent.py` text-generation agent.")
 
-# Initialize session state for chat history
-if "chat" not in st.session_state:
-    st.session_state.chat = [{"role": "system", "content": "You are a helpful, concise assistant."}]
+def check_api_health(api_url: str) -> dict[str, Any]:
+    response = requests.get(f"{api_url.rstrip('/')}/health", timeout=5)
+    response.raise_for_status()
+    return response.json()
 
-col1, col2 = st.columns([3, 1])
 
-# Handler that will be run as the button callback. Using on_click avoids modifying
-# widget-bound session_state keys after widget instantiation (which raises StreamlitAPIException).
-def handle_send():
-    user_text = st.session_state.get("user_input", "").strip()
-    if not user_text:
-        # Nothing to do
-        return
+def send_message(api_url: str, message: str) -> dict[str, Any]:
+    response = requests.post(
+        f"{api_url.rstrip('/')}/chat",
+        json={"message": message, "chat": st.session_state.chat},
+        timeout=240,
+    )
+    response.raise_for_status()
+    return response.json()
 
-    # Append user message to chat
-    chat = st.session_state.get("chat", [])
-    chat.append({"role": "user", "content": user_text})
-    st.session_state.chat = chat
 
-    # Call the model
-    pipe = get_pipeline()
-    try:
-        response = pipe(st.session_state.chat, max_new_tokens=200)
-    except Exception as e:
-        # Store an assistant message describing the error for visibility
-        err_msg = f"Model error: {e}"
-        st.session_state.chat.append({"role": "assistant", "content": err_msg})
-        # Clear input
-        st.session_state.user_input = ""
-        return
+st.set_page_config(page_title="First Agent", layout="wide")
+st.title("First Agent")
 
-    # Robustly parse the pipeline response and update chat
-    try:
-        first = response[0] if isinstance(response, list) else response
-        gen = None
-        if isinstance(first, dict):
-            gen = first.get("generated_text") or first.get("text") or first.get("summary_text")
-        else:
-            gen = first
+st.session_state.setdefault("chat", initial_chat())
+st.session_state.setdefault("api_url", DEFAULT_API_URL)
 
-        if isinstance(gen, list):
-            # full chat history returned — keep it as-is without duplicating the last reply
-            st.session_state.chat = gen
-        elif isinstance(gen, str):
-            st.session_state.chat.append({"role": "assistant", "content": gen})
-        else:
-            st.session_state.chat.append({"role": "assistant", "content": str(gen)})
-    except Exception as e:
-        st.session_state.chat.append({"role": "assistant", "content": f"(Could not parse model response: {e})"})
+with st.sidebar:
+    st.text_input("Agent API URL", key="api_url")
 
-    # Clear the input so the widget becomes empty on next render
-    st.session_state.user_input = ""
+    if st.button(":material/network_ping: Check status"):
+        try:
+            health = check_api_health(_api_url())
+            st.success(f"{health['status']} - {health['model_id']}")
+        except requests.RequestException as exc:
+            st.error(f"API unavailable: {exc}")
 
-with col1:
-    # The text area creates the widget and binds to st.session_state['user_input']
-    st.text_area("Your message", height=120, key="user_input")
-    st.button("Send", on_click=handle_send)
+    if st.button(":material/delete: Clear conversation"):
+        st.session_state.chat = initial_chat()
+        st.rerun()
 
-with col2:
-    if st.button("Clear conversation"):
-        st.session_state.chat = [{"role": "system", "content": "You are a helpful, concise assistant."}]
-        st.experimental_rerun()
+    st.caption(f"Default model: {DEFAULT_MODEL_ID}")
 
-# Show the chat history
-st.subheader("Conversation")
-for msg in st.session_state.chat:
-    role = msg.get("role")
-    content = msg.get("content")
-    if role == "system":
-        st.markdown(f"**System:** {content}")
-    elif role == "user":
-        st.markdown(f"**You:** {content}")
-    elif role == "assistant":
-        st.markdown(f"**Assistant:** {content}")
-    else:
-        # Unknown role — print generically
-        st.markdown(f"**{role}:** {content}")
+for message in st.session_state.chat:
+    role = message.get("role")
+    if role not in {"user", "assistant"}:
+        continue
 
-st.markdown("---")
-st.caption("Model: %s — uses the same model and behavior as first_agent.py" % MODEL_ID)
+    with st.chat_message(role):
+        st.write(message.get("content", ""))
 
-st.markdown("Run this app with: `streamlit run streamlit_frontend.py`")
+if prompt := st.chat_input("Message the agent"):
+    with st.chat_message("user"):
+        st.write(prompt)
+
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            try:
+                result = send_message(_api_url(), prompt)
+                st.session_state.chat = result["chat"]
+                st.write(result["reply"])
+                st.caption(f"{result['elapsed_seconds']:.2f}s via FastAPI")
+            except requests.RequestException as exc:
+                st.session_state.chat = [
+                    *st.session_state.chat,
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": f"API error: {exc}"},
+                ]
+                st.error(f"API error: {exc}")
