@@ -1,47 +1,74 @@
-Set-up a virtual Env
-```
+# AI Agent Course
+
+## Setup
+
+Create a virtual environment:
+
+```powershell
 py -m venv .venv
 ```
 
-Activate the Env
-```
+Activate the environment:
+
+```powershell
 .venv\Scripts\Activate.ps1
 ```
 
-Install PyTorch first (this is the piece the original setup was missing — `transformers`
-can't load any model without it).
+Install PyTorch first. `transformers` needs a backend such as PyTorch to load models.
 
-If your laptop does **not** have a dedicated NVIDIA GPU (most laptops), install the
-lighter CPU-only build:
-```
+For CPU-only laptops:
+
+```powershell
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 ```
-If you *do* have an NVIDIA GPU and want CUDA acceleration, use the command generator at
-https://pytorch.org/get-started/locally/ instead.
 
-Install the rest of the libraries
-```
+For NVIDIA GPU acceleration, use the command generator at:
+
+https://pytorch.org/get-started/locally/
+
+Install the rest of the libraries:
+
+```powershell
 pip install -r requirements.txt
 ```
 
-Verify that everything is in place
-```
+Verify that everything is in place:
+
+```powershell
 py -c "import torch, transformers; print('The setup was successful, PyTorch:', torch.__version__)"
 ```
 
-You should see something like: "The setup was successful, PyTorch: 2.x.x"
+You should see something like: `The setup was successful, PyTorch: 2.x.x`
 
-Run the agent
-```
+## Run
+
+Run the terminal agent:
+
+```powershell
 py first_agent.py
 ```
 
-Notes
-- `HF_TOKEN` in a `.env` file is optional now — it's only needed for gated/private models
-  or to raise your Hugging Face API rate limits. The model used in `first_agent.py`
-  (`HuggingFaceTB/SmolLM2-360M-Instruct`) is public.
-- The original script pointed at `deepseek-ai/DeepSeek-V4-Pro-0813`, which is a
-  1.57-trillion-parameter server-scale model — not something a laptop can load locally.
-  `first_agent.py` now uses a ~360M-parameter model instead, which downloads quickly and
-  runs on CPU. If you want noticeably better answers and don't mind a slower first load,
-  swap `MODEL_ID` for `"Qwen/Qwen2.5-0.5B-Instruct"` or `"HuggingFaceTB/SmolLM2-1.7B-Instruct"`.
+Run the Streamlit UI:
+
+```powershell
+streamlit run apps/streamlit_app.py
+```
+
+## Project Structure
+
+- `apps/`: user interfaces and runnable app entry points.
+- `src/first_agent/`: reusable agent code shared by the CLI and Streamlit UI.
+- `assets/`: images, documents, and static assets.
+- `skills/`: future custom agent skills.
+- `mcp/`: future MCP server configuration and setup notes.
+- `tools/`: future tool integrations and helper scripts.
+- `docs/`: project notes and documentation.
+- `logs/`: local runtime logs for app processes.
+- `audit_log.md`: running issue and recovery log.
+
+## Notes
+
+- `HF_TOKEN` in a `.env` file is optional. It is only needed for gated/private models or to raise Hugging Face API rate limits.
+- The model used by default is `HuggingFaceTB/SmolLM2-360M-Instruct`, which is public and small enough to run locally.
+- The original script pointed at `deepseek-ai/DeepSeek-V4-Pro-0813`, which is a 1.57-trillion-parameter server-scale model and not practical to load on a laptop.
+- If you want noticeably better answers and do not mind a slower first load, set `HF_MODEL_ID` or use the Streamlit sidebar to try `Qwen/Qwen2.5-0.5B-Instruct` or `HuggingFaceTB/SmolLM2-1.7B-Instruct`.

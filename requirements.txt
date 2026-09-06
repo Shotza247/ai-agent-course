@@ -7,3 +7,4 @@ duckduckgo-search
 python-dotenv
 beautifulsoup4
 openai
+streamlit
