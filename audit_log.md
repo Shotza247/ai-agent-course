@@ -1,5 +1,31 @@
 # Audit Log
 
+## 2026-09-07 15:00 - Hugging Face Hosted Inference Adapter
+
+- Status: passed
+- Goal: Complete migration phase 2 by connecting the provider-neutral model boundary to Hugging Face Inference Providers.
+- Scope: model adapters, model factory, environment template, tests, README, and live hosted inference.
+- Evidence:
+  - Installed `huggingface_hub==1.28.0` supports `InferenceClient.chat_completion()` with messages, model, provider, and token limits.
+  - `HF_TOKEN` was present in the local `.env`; its value was not displayed or recorded.
+- Changes:
+  - Added `HuggingFaceInferenceChatModel` using the official synchronous `InferenceClient`.
+  - Added environment-driven selection between `local` and `huggingface` backends.
+  - Added `.env.example` with non-secret local and hosted configuration.
+  - Kept local Transformers inference as the default and preserved the Streamlit/agent contract.
+- Issues and fixes:
+  - `Qwen/Qwen2.5-7B-Instruct` with automatic routing returned HTTP 400 `model_not_available` because Together required a dedicated endpoint.
+  - `Qwen/Qwen2.5-7B-Instruct-1M` accepted an explicit `featherless-ai` request; the initial 12-token response contained only whitespace.
+  - Tightened empty-response validation and increased the smoke-test token allowance.
+  - Automatic routing for the replacement model returned HTTP 400 `model_not_supported` for the account's enabled providers, so `featherless-ai` became the tested configurable default.
+- Verification:
+  - Hosted request through `featherless-ai` returned a non-empty response successfully.
+  - Unit coverage verifies hosted request mapping, response normalization, blank-response rejection, factory selection, and invalid backend handling.
+  - `python -m unittest discover -s tests -v`: passed 11 tests.
+  - `python -m compileall first_agent.py apps src tests`: passed.
+  - `git diff --check`: passed.
+- Follow-up: Preserve the Streamlit Sources behavior while introducing LangGraph around the existing research tools in migration phase 4.
+
 ## 2026-09-07 14:00 - Provider-Neutral Model Boundary
 
 - Status: passed

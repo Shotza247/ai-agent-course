@@ -1,8 +1,13 @@
 import unittest
-from unittest.mock import patch
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 from src.first_agent.agent import LocalChatAgent
-from src.first_agent.models import TransformersChatModel
+from src.first_agent.models import (
+    HuggingFaceInferenceChatModel,
+    TransformersChatModel,
+    create_chat_model,
+)
 from src.first_agent.tools import ResearchSource, WebResearchTools
 
 
@@ -36,6 +41,70 @@ class FakeChatModel:
 
 
 class ResearchAgentTests(unittest.TestCase):
+    def test_huggingface_adapter_maps_chat_request_and_response(self) -> None:
+        client = Mock()
+        client.chat_completion.return_value = SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content="Hosted reply"))]
+        )
+        model = HuggingFaceInferenceChatModel(
+            "test/hosted-model",
+            token="test-token",
+            provider="auto",
+            client=client,
+        )
+
+        reply = model.generate(
+            [{"role": "user", "content": "Hello"}],
+            max_new_tokens=80,
+        )
+
+        self.assertEqual(reply, "Hosted reply")
+        client.chat_completion.assert_called_once_with(
+            [{"role": "user", "content": "Hello"}],
+            model="test/hosted-model",
+            max_tokens=80,
+            temperature=0.0,
+        )
+
+    def test_huggingface_adapter_rejects_blank_response(self) -> None:
+        client = Mock()
+        client.chat_completion.return_value = SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content="   "))]
+        )
+        model = HuggingFaceInferenceChatModel(
+            "test/hosted-model",
+            token="test-token",
+            client=client,
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "empty response"):
+            model.generate([{"role": "user", "content": "Hello"}])
+
+    @patch.dict(
+        "os.environ",
+        {
+            "CHAT_MODEL_BACKEND": "huggingface",
+            "HF_TOKEN": "test-token",
+            "HF_INFERENCE_MODEL_ID": "test/hosted-model",
+        },
+        clear=True,
+    )
+    @patch("src.first_agent.models.factory.HuggingFaceInferenceChatModel")
+    def test_model_factory_selects_huggingface_backend(self, hosted_model) -> None:
+        create_chat_model()
+
+        hosted_model.assert_called_once_with(
+            "test/hosted-model",
+            token="test-token",
+            provider="featherless-ai",
+            timeout=60.0,
+        )
+
+    @patch.dict("os.environ", {"CHAT_MODEL_BACKEND": "unsupported"}, clear=True)
+    def test_model_factory_rejects_unknown_backend(self) -> None:
+        with self.assertRaisesRegex(ValueError, "Unsupported CHAT_MODEL_BACKEND"):
+            create_chat_model()
+
     @patch("src.first_agent.models.transformers._get_pipeline")
     def test_transformers_adapter_normalizes_chat_output(self, get_pipeline) -> None:
         get_pipeline.return_value.return_value = [

@@ -58,12 +58,38 @@ Enter a topic or question. The agent searches the web without an API key, retrie
 public pages, asks the local Hugging Face model to synthesize the evidence, and
 returns a short answer with source links.
 
+## Model Backend
+
+Local Transformers inference remains the default:
+
+```dotenv
+CHAT_MODEL_BACKEND=local
+HF_MODEL_ID=HuggingFaceTB/SmolLM2-360M-Instruct
+```
+
+To use Hugging Face Inference Providers, copy the hosted settings from
+`.env.example` into `.env` and supply a Hugging Face token with inference access:
+
+```dotenv
+CHAT_MODEL_BACKEND=huggingface
+HF_TOKEN=hf_replace_with_your_token
+HF_INFERENCE_MODEL_ID=Qwen/Qwen2.5-7B-Instruct-1M
+HF_INFERENCE_PROVIDER=featherless-ai
+HF_INFERENCE_TIMEOUT=60
+```
+
+Restart Streamlit after changing the backend. Provider availability can change;
+if a model is no longer served, choose a chat-completion model and provider shown
+on its current Hugging Face model page.
+
 ## Project Structure
 
 - `apps/`: user interfaces and runnable app entry points.
 - `src/first_agent/`: reusable agent orchestration shared by the CLI and Streamlit UI.
 - `src/first_agent/models/`: provider-neutral chat-model contract and provider adapters.
 - `src/first_agent/models/transformers.py`: current local Transformers implementation.
+- `src/first_agent/models/huggingface_inference.py`: hosted Inference Providers implementation.
+- `src/first_agent/models/factory.py`: environment-driven backend and model selection.
 - `src/first_agent/tools/`: replaceable agent tools, kept separate from orchestration and interfaces.
 - `src/first_agent/tools/web_research.py`: keyless search, safe URL validation, redirects, and webpage extraction.
 - `assets/`: images, documents, and static assets.

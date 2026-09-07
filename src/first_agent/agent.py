@@ -1,10 +1,9 @@
-import os
 import re
 
-from .models import ChatModel, TransformersChatModel
+from .models import ChatModel, create_chat_model, get_default_model_id
 from .tools import ResearchSource, WebResearchTools
 
-DEFAULT_MODEL_ID = "HuggingFaceTB/SmolLM2-360M-Instruct"
+DEFAULT_MODEL_ID = get_default_model_id()
 DEFAULT_SYSTEM_PROMPT = (
     "You are a concise research assistant. Answer only from the supplied web research. "
     "Clearly state when the sources do not contain enough evidence."
@@ -19,10 +18,10 @@ class LocalChatAgent:
         research_tools: WebResearchTools | None = None,
         chat_model: ChatModel | None = None,
     ) -> None:
-        self.model_id = model_id or os.getenv("HF_MODEL_ID", DEFAULT_MODEL_ID)
+        self.model_id = model_id or get_default_model_id()
         self.system_prompt = system_prompt
         self.research_tools = research_tools or WebResearchTools()
-        self.chat_model = chat_model or TransformersChatModel(self.model_id)
+        self.chat_model = chat_model or create_chat_model(self.model_id)
 
     def new_chat(self) -> list[dict[str, str]]:
         return [{"role": "system", "content": self.system_prompt}]
