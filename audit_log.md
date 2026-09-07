@@ -1,5 +1,24 @@
 # Audit Log
 
+## 2026-09-07 20:15 - DNS Failure in Research UI
+
+- Status: fixed
+- Symptom: Streamlit displayed `Agent error: [Errno 11001] getaddrinfo failed` after submitting a research request.
+- Scope: running Streamlit process, DDGS search boundary, and hosted Hugging Face adapter.
+- Suspected cause: transient hostname resolution failure escaped from the search call before per-page recovery; the running UI also predated the hosted-backend `.env` update.
+- Evidence:
+  - DNS checks subsequently resolved `duckduckgo.com`, `router.huggingface.co`, and `r.jina.ai` successfully, indicating a transient rather than persistent resolver failure.
+  - The old port-8503 log showed local Transformers weights loading, proving the process had not read the new hosted configuration.
+- Changes:
+  - Restarted Streamlit on port 8503; the fresh server returned HTTP 200.
+  - `WebResearchTools.research()` now converts DDGS, HTTP, and OS-level search failures into an empty-source result handled by the agent's existing retry response.
+  - `HuggingFaceInferenceChatModel` now translates provider HTTP, timeout, and OS network errors into a concise actionable message.
+- Verification:
+  - Added unit coverage for DDGS DNS recovery and hosted-model DNS error translation.
+  - `python -m unittest discover -s tests -v`: passed 13 tests.
+  - Fresh Streamlit server: HTTP 200 at `http://localhost:8503`.
+- Follow-up: Refresh the browser and retry the research request; transient DNS failures now produce a recoverable response instead of a raw socket error.
+
 ## 2026-09-07 15:00 - Hugging Face Hosted Inference Adapter
 
 - Status: passed

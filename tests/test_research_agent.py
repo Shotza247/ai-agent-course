@@ -80,6 +80,18 @@ class ResearchAgentTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "empty response"):
             model.generate([{"role": "user", "content": "Hello"}])
 
+    def test_huggingface_adapter_translates_dns_failure(self) -> None:
+        client = Mock()
+        client.chat_completion.side_effect = OSError(11001, "getaddrinfo failed")
+        model = HuggingFaceInferenceChatModel(
+            "test/hosted-model",
+            token="test-token",
+            client=client,
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "temporarily unreachable"):
+            model.generate([{"role": "user", "content": "Hello"}])
+
     @patch.dict(
         "os.environ",
         {
@@ -146,6 +158,12 @@ class ResearchAgentTests(unittest.TestCase):
             safesearch="moderate",
             max_results=1,
         )
+
+    @patch.object(WebResearchTools, "search_web")
+    def test_research_recovers_from_dns_failure(self, search_web) -> None:
+        search_web.side_effect = OSError(11001, "getaddrinfo failed")
+
+        self.assertEqual(WebResearchTools().research("test query"), [])
 
     def test_html_to_text_removes_non_content_elements(self) -> None:
         html = "<main><h1>Useful</h1><p>Evidence</p></main><script>ignore()</script>"

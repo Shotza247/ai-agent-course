@@ -8,6 +8,7 @@ from urllib.parse import urljoin, urlparse
 import httpx
 from bs4 import BeautifulSoup
 from ddgs import DDGS
+from ddgs.exceptions import DDGSException
 
 
 @dataclass(frozen=True)
@@ -80,7 +81,12 @@ class WebResearchTools:
 
     def research(self, query: str, max_sources: int = 3) -> list[ResearchSource]:
         sources: list[ResearchSource] = []
-        for result in self.search_web(query, max_results=max_sources + 2):
+        try:
+            results = self.search_web(query, max_results=max_sources + 2)
+        except (DDGSException, httpx.HTTPError, OSError):
+            return sources
+
+        for result in results:
             try:
                 source = self.scrape_url(result)
             except (httpx.HTTPError, ValueError, socket.gaierror):
