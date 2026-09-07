@@ -3,7 +3,8 @@ langchain-huggingface
 transformers
 torch
 huggingface_hub
-duckduckgo-search
+ddgs
+httpx
 python-dotenv
 beautifulsoup4
 openai
