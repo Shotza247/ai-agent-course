@@ -1,5 +1,24 @@
 # Audit Log
 
+## 2026-09-07 14:00 - Provider-Neutral Model Boundary
+
+- Status: passed
+- Goal: Complete migration phase 1 by removing direct Transformers inference from agent orchestration without changing user-facing behavior.
+- Scope: `src/first_agent/models/`, `src/first_agent/agent.py`, exports, tests, and README.
+- Changes:
+  - Added a `ChatModel` protocol accepting chat messages and generation options.
+  - Moved Hugging Face login, pipeline caching, local model loading, and response normalization into `TransformersChatModel`.
+  - Injected the model adapter into `LocalChatAgent`; the local Transformers adapter remains the default for backward compatibility.
+  - Preserved the CLI and Streamlit research contracts, including authoritative links and the collapsed Sources expander.
+- Verification:
+  - Existing 5-test suite passed immediately after the refactor.
+  - Added focused coverage for adapter output normalization and plain-chat dependency injection.
+  - `python -m unittest discover -s tests -v`: passed 7 tests.
+  - `python -m compileall first_agent.py apps src tests`: passed.
+  - `git diff --check`: passed.
+- Operational note: Streamlit documentation discovery required the project Python executable, which Windows allowed only outside the restricted sandbox. This did not affect application tests.
+- Follow-up: Add a Hugging Face Inference Providers adapter as migration phase 2, selected through configuration while retaining `TransformersChatModel` for local use.
+
 ## 2026-09-07 13:00 - Remove Duplicate Source Output
 
 - Status: passed

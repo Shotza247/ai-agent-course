@@ -1,12 +1,7 @@
 import os
 import re
-from functools import lru_cache
-from typing import Any
 
-from dotenv import load_dotenv
-from huggingface_hub import login
-from transformers import pipeline
-
+from .models import ChatModel, TransformersChatModel
 from .tools import ResearchSource, WebResearchTools
 
 DEFAULT_MODEL_ID = "HuggingFaceTB/SmolLM2-360M-Instruct"
@@ -16,34 +11,18 @@ DEFAULT_SYSTEM_PROMPT = (
 )
 
 
-@lru_cache(maxsize=1)
-def _login_to_huggingface() -> None:
-    load_dotenv()
-    hf_token = os.getenv("HF_TOKEN")
-    if hf_token:
-        login(token=hf_token)
-
-
-@lru_cache(maxsize=4)
-def _get_pipeline(model_id: str) -> Any:
-    _login_to_huggingface()
-    return pipeline(
-        task="text-generation",
-        model=model_id,
-        dtype="auto",
-    )
-
-
 class LocalChatAgent:
     def __init__(
         self,
         model_id: str | None = None,
         system_prompt: str = DEFAULT_SYSTEM_PROMPT,
         research_tools: WebResearchTools | None = None,
+        chat_model: ChatModel | None = None,
     ) -> None:
         self.model_id = model_id or os.getenv("HF_MODEL_ID", DEFAULT_MODEL_ID)
         self.system_prompt = system_prompt
         self.research_tools = research_tools or WebResearchTools()
+        self.chat_model = chat_model or TransformersChatModel(self.model_id)
 
     def new_chat(self) -> list[dict[str, str]]:
         return [{"role": "system", "content": self.system_prompt}]
@@ -55,14 +34,7 @@ class LocalChatAgent:
         max_new_tokens: int = 200,
     ) -> tuple[str, list[dict[str, str]]]:
         messages = [*chat_history, {"role": "user", "content": user_input}]
-        response = _get_pipeline(self.model_id)(messages, max_new_tokens=max_new_tokens)
-        generated_text = response[0]["generated_text"]
-
-        if isinstance(generated_text, list) and generated_text:
-            reply = generated_text[-1].get("content", "")
-            return reply, generated_text
-
-        reply = str(generated_text)
+        reply = self.chat_model.generate(messages, max_new_tokens=max_new_tokens)
         return reply, [*messages, {"role": "assistant", "content": reply}]
 
     def generate_research_reply(
@@ -86,16 +58,11 @@ class LocalChatAgent:
 
         research_prompt = self._build_research_prompt(user_input, sources)
         model_messages = [*chat_history, {"role": "user", "content": research_prompt}]
-        response = _get_pipeline(self.model_id)(
+        summary = self.chat_model.generate(
             model_messages,
             max_new_tokens=max_new_tokens,
             do_sample=False,
         )
-        generated_text = response[0]["generated_text"]
-        if isinstance(generated_text, list) and generated_text:
-            summary = generated_text[-1].get("content", "").strip()
-        else:
-            summary = str(generated_text).strip()
         summary = self._strip_generated_sources(summary)
 
         source_links = "\n".join(
