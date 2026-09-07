@@ -17,7 +17,7 @@ def main() -> None:
             if not user_input:
                 continue
 
-            reply, chat = agent.generate_reply(
+            reply, chat = agent.generate_research_reply(
                 chat_history=chat,
                 user_input=user_input,
                 max_new_tokens=200,
