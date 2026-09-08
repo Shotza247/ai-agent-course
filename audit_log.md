@@ -1,5 +1,28 @@
 # Audit Log
 
+## 2026-09-08 10:38 - Financial Multi-Agent Blueprint
+
+- Status: passed
+- Goal: Design an implementation-ready financial research architecture using Finnhub, Alpha Vantage, Hugging Face models, and LangGraph without changing runtime code.
+- Scope: agent topology, graph state, provider gateway, data contracts, persistence, FastAPI, MCP, evaluation, and delivery phases.
+- Evidence:
+  - Finnhub documents REST JSON APIs, token/header authentication, HTTP 429 rate-limit responses, and a 30-calls-per-second ceiling in addition to plan limits.
+  - Alpha Vantage documents financial time series, fundamentals, news/sentiment, economic data, and technical indicators; its free service currently states 25 requests per day.
+  - LangGraph documents checkpointed state, fault-tolerant resumption, parallel super-steps, and subgraphs for multi-agent systems.
+  - Hugging Face documents provider-dependent function calling and structured chat-completion tools.
+- Decisions:
+  - Use a deterministic parent graph with bounded specialist subgraphs instead of an open-ended agent swarm.
+  - Put both financial providers behind one canonical, quota-aware market-data gateway.
+  - Keep calculations and validation deterministic; use LLMs for planning, interpretation, counterpoints, and synthesis.
+  - Preserve provider, endpoint, timestamps, units, currency, adjustment policy, and evidence IDs through the full pipeline.
+- Changes:
+  - Added `docs/FINANCIAL_RESEARCH_BLUEPRINT.md` with target architecture, node and agent responsibilities, canonical schemas, persistence, API/MCP contracts, evaluation gates, and eight implementation phases.
+  - Linked the blueprint from the README and architecture guide.
+- Verification:
+  - Cross-checked mutable API and framework claims against official Finnhub, Alpha Vantage, LangChain/LangGraph, and Hugging Face documentation on 2026-09-08.
+  - No runtime code or secrets changed.
+- Follow-up: Resolve the six scope and operating-budget decisions in the blueprint, then begin Phase 0 with schemas and sanitized provider fixtures.
+
 ## 2026-09-08 10:13 - Documentation Reconciliation
 
 - Status: passed

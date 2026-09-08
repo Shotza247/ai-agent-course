@@ -18,6 +18,9 @@ The intended next architecture is documented in
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). FastAPI, LangGraph, and MCP are
 planned boundaries; they are not active in the current request path.
 
+The proposed financial multi-agent system and its implementation gates are in
+[`docs/FINANCIAL_RESEARCH_BLUEPRINT.md`](docs/FINANCIAL_RESEARCH_BLUEPRINT.md).
+
 ## Setup
 
 Create and activate a virtual environment:

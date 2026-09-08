@@ -85,3 +85,11 @@ Streamlit and any model provider. A response should keep answer text and sources
 as separate structured fields rather than relying on the current Markdown
 separator. The Streamlit client can then render the same collapsed Sources UI
 from structured data.
+
+## Financial Research Extension
+
+The approved direction for the next domain-specific evolution is documented in
+[`FINANCIAL_RESEARCH_BLUEPRINT.md`](FINANCIAL_RESEARCH_BLUEPRINT.md). It defines
+the controlled multi-agent graph, normalized Finnhub and Alpha Vantage gateway,
+financial evidence contracts, saved briefs, refresh history, quality gates, and
+the staged path to FastAPI and streamable HTTP MCP.
