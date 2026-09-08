@@ -1,74 +1,57 @@
-# AI Agent Course
+# First Research Agent
+
+A reusable research-agent prototype with a Streamlit chat interface, keyless web
+search and scraping, and swappable local or hosted Hugging Face inference.
+
+## Current Flow
+
+```text
+Streamlit UI
+  -> LocalChatAgent
+     -> WebResearchTools (search, retrieve, extract)
+     -> ChatModel adapter
+        -> local Transformers pipeline
+        or Hugging Face Inference Providers
+```
+
+The intended next architecture is documented in
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). FastAPI, LangGraph, and MCP are
+planned boundaries; they are not active in the current request path.
 
 ## Setup
 
-Create a virtual environment:
+Create and activate a virtual environment:
 
 ```powershell
 py -m venv .venv
-```
-
-Activate the environment:
-
-```powershell
 .venv\Scripts\Activate.ps1
 ```
 
-Install PyTorch first. `transformers` needs a backend such as PyTorch to load models.
-
-For CPU-only laptops:
+For local inference, install the appropriate PyTorch build first. For a CPU-only
+machine:
 
 ```powershell
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 ```
 
-For NVIDIA GPU acceleration, use the command generator at:
-
-https://pytorch.org/get-started/locally/
-
-Install the rest of the libraries:
+Then install the project dependencies:
 
 ```powershell
 pip install -r requirements.txt
 ```
 
-Verify that everything is in place:
+Copy `.env.example` to `.env` and select one model backend.
 
-```powershell
-py -c "import torch, transformers; print('The setup was successful, PyTorch:', torch.__version__)"
-```
+## Model Backends
 
-You should see something like: `The setup was successful, PyTorch: 2.x.x`
-
-## Run
-
-Run the terminal agent:
-
-```powershell
-py first_agent.py
-```
-
-Run the Streamlit research UI:
-
-```powershell
-python -m streamlit run apps/streamlit_app.py --server.fileWatcherType=none
-```
-
-Enter a topic or question. The agent searches the web without an API key, retrieves
-public pages, asks the local Hugging Face model to synthesize the evidence, and
-returns a short answer with source links.
-
-## Model Backend
-
-Local Transformers inference remains the default:
+Local Transformers inference downloads and runs the model on this machine:
 
 ```dotenv
 CHAT_MODEL_BACKEND=local
 HF_MODEL_ID=HuggingFaceTB/SmolLM2-360M-Instruct
 ```
 
-To use Hugging Face Inference Providers, copy the hosted settings from
-`.env.example` into `.env` and supply a Hugging Face token with inference access:
+Hosted inference sends chat messages to Hugging Face Inference Providers:
 
 ```dotenv
 CHAT_MODEL_BACKEND=huggingface
@@ -78,49 +61,73 @@ HF_INFERENCE_PROVIDER=featherless-ai
 HF_INFERENCE_TIMEOUT=60
 ```
 
-Restart Streamlit after changing the backend. Provider availability can change;
-if a model is no longer served, choose a chat-completion model and provider shown
-on its current Hugging Face model page.
+`HF_TOKEN` is required for hosted inference and must never be committed. It is
+optional in local mode unless the selected model is gated or private. Provider
+and model availability can change, so verify both on the Hugging Face model page
+when changing this configuration.
 
-## Project Structure
+Restart Streamlit whenever `.env` changes because the running process retains
+the environment and cached agent resources it started with.
 
-- `apps/`: user interfaces and runnable app entry points.
-- `src/first_agent/`: reusable agent orchestration shared by the CLI and Streamlit UI.
-- `src/first_agent/models/`: provider-neutral chat-model contract and provider adapters.
-- `src/first_agent/models/transformers.py`: current local Transformers implementation.
-- `src/first_agent/models/huggingface_inference.py`: hosted Inference Providers implementation.
-- `src/first_agent/models/factory.py`: environment-driven backend and model selection.
-- `src/first_agent/tools/`: replaceable agent tools, kept separate from orchestration and interfaces.
-- `src/first_agent/tools/web_research.py`: keyless search, safe URL validation, redirects, and webpage extraction.
-- `assets/`: images, documents, and static assets.
-- `skills/`: future custom agent skills.
-- `mcp/`: future MCP server configuration and setup notes.
-- `tools/`: future tool integrations and helper scripts.
-- `docs/`: project notes and documentation.
-- `logs/`: local runtime logs for app processes.
-- `audit_log.md`: running issue and recovery log.
+## Run
 
-## Notes
+Run the Streamlit research UI:
 
-- `HF_TOKEN` in a `.env` file is optional. It is only needed for gated/private models or to raise Hugging Face API rate limits.
-- The model used by default is `HuggingFaceTB/SmolLM2-360M-Instruct`, which is public and small enough to run locally.
-- Web research uses DuckDuckGo search, direct HTML extraction, and Jina Reader as a fallback. Public services may rate-limit or temporarily reject requests.
-- The scraper rejects local/private network targets and only accepts public HTTP(S) URLs.
-- Research answers show citations only in a collapsed **Sources** section below the summary; duplicate source blocks generated by the model are removed.
-- `LocalChatAgent` depends on the `ChatModel` protocol rather than importing Transformers directly. This keeps the current local workflow intact while allowing a hosted provider adapter to be added independently.
+```powershell
+python -m streamlit run apps/streamlit_app.py --server.port=8503 --server.fileWatcherType=none
+```
+
+Open `http://localhost:8503`, enter a question, and choose the number of sources.
+The agent searches public webpages, synthesizes a concise answer, and places the
+authoritative links inside a collapsed **Sources** section.
+
+Run the terminal interface:
+
+```powershell
+py first_agent.py
+```
 
 ## Verification
 
-Run the unit tests:
-
 ```powershell
 python -m unittest discover -s tests -v
+python -m compileall first_agent.py apps src tests
+git diff --check
 ```
 
-The tests cover model-adapter injection and output normalization, HTML cleanup,
-public URL enforcement, search-result mapping, and the connection between
-`LocalChatAgent` and `WebResearchTools`. Live search is
-also smoke-tested separately because public search services cannot be made fully
-deterministic in a unit test.
-- The original script pointed at `deepseek-ai/DeepSeek-V4-Pro-0813`, which is a 1.57-trillion-parameter server-scale model and not practical to load on a laptop.
-- If you want noticeably better answers and do not mind a slower first load, set `HF_MODEL_ID` or use the Streamlit sidebar to try `Qwen/Qwen2.5-0.5B-Instruct` or `HuggingFaceTB/SmolLM2-1.7B-Instruct`.
+The current suite contains 13 tests covering model adapters, backend selection,
+hosted request mapping, empty and unreachable provider responses, search-result
+mapping, DNS recovery, HTML extraction, public-URL enforcement, agent-tool
+integration, chat history, and citation cleanup.
+
+Live search and hosted inference are smoke-tested separately because public
+services, account credits, and provider availability are not deterministic.
+
+## Project Structure
+
+- `apps/`: Streamlit and future interface entry points.
+- `src/first_agent/agent.py`: research-agent orchestration.
+- `src/first_agent/models/`: neutral model contract, factory, and adapters.
+- `src/first_agent/tools/`: web search and scraping tools.
+- `tests/`: deterministic unit and integration-boundary tests.
+- `docs/`: architecture and operating guides.
+- `logs/`: runtime, crash, replay, and test logs; no `.log` files belong in the project root.
+- `assets/`: future images, documents, and static assets.
+- `skills/`: future custom agent skills.
+- `mcp/`: future MCP server configuration and setup.
+- `tools/`: future standalone tool adapters and helper scripts.
+- `audit_log.md`: chronological implementation and incident trail.
+
+## Reliability Notes
+
+- Search uses DDGS without an API key, direct HTTP retrieval, and Jina Reader as
+  a fallback. Public services may rate-limit or temporarily fail.
+- The scraper permits only public HTTP(S) targets and validates redirects to
+  reduce server-side request forgery risk.
+- Search DNS failures return a recoverable no-sources response. Hosted provider
+  DNS, timeout, and HTTP failures return a concise retry message.
+- The local model is useful for lightweight development but generally produces
+  weaker research summaries than the configured hosted model.
+
+See [`docs/OPERATIONS.md`](docs/OPERATIONS.md) for startup, troubleshooting, log,
+and Hugging Face usage-monitoring procedures.

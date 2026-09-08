@@ -1,5 +1,24 @@
 # Audit Log
 
+## 2026-09-08 10:13 - Documentation Reconciliation
+
+- Status: passed
+- Goal: Bring every project document in line with the implemented architecture and current operating procedures.
+- Scope: `README.md`, `docs/ARCHITECTURE.md`, `docs/OPERATIONS.md`, and this audit log.
+- Evidence:
+  - Source inventory confirms 13 unit tests and two implemented model adapters.
+  - Root log count is zero; 17 existing `.log` files are contained in `logs/`.
+  - Git history contains separate checkpoints for tools, agent integration, Streamlit, model abstraction, hosted inference, and DNS recovery.
+- Changes:
+  - Rewrote the README around setup, backend selection, execution, verification, structure, and reliability.
+  - Added an architecture reference distinguishing implemented components from planned LangGraph, FastAPI, and MCP boundaries.
+  - Added an operations guide for startup, backend checks, DNS/provider troubleshooting, Hugging Face usage monitoring, and log placement.
+  - Corrected hosted token requirements, current test count, model/provider defaults, restart requirements, and log policy.
+- Verification:
+  - Reviewed documented paths and environment names against the current source tree and `.env.example`.
+  - `git diff --check`: passed.
+- Follow-up: Update architecture and operations documentation in the same commit as each subsequent migration phase.
+
 ## 2026-09-07 20:15 - DNS Failure in Research UI
 
 - Status: fixed
