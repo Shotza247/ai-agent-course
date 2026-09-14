@@ -1,0 +1,582 @@
+[
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "re",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "re",
+        "description": "re",
+        "detail": "re",
+        "documentation": {}
+    },
+    {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "streamlit",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "streamlit",
+        "description": "streamlit",
+        "detail": "streamlit",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_MODEL_ID",
+        "importPath": "src.first_agent.agent",
+        "description": "src.first_agent.agent",
+        "isExtraImport": true,
+        "detail": "src.first_agent.agent",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_SYSTEM_PROMPT",
+        "importPath": "src.first_agent.agent",
+        "description": "src.first_agent.agent",
+        "isExtraImport": true,
+        "detail": "src.first_agent.agent",
+        "documentation": {}
+    },
+    {
+        "label": "LocalChatAgent",
+        "importPath": "src.first_agent.agent",
+        "description": "src.first_agent.agent",
+        "isExtraImport": true,
+        "detail": "src.first_agent.agent",
+        "documentation": {}
+    },
+    {
+        "label": "LocalChatAgent",
+        "importPath": "src.first_agent.agent",
+        "description": "src.first_agent.agent",
+        "isExtraImport": true,
+        "detail": "src.first_agent.agent",
+        "documentation": {}
+    },
+    {
+        "label": "LocalChatAgent",
+        "importPath": "src.first_agent.agent",
+        "description": "src.first_agent.agent",
+        "isExtraImport": true,
+        "detail": "src.first_agent.agent",
+        "documentation": {}
+    },
+    {
+        "label": "Protocol",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "load_dotenv",
+        "importPath": "dotenv",
+        "description": "dotenv",
+        "isExtraImport": true,
+        "detail": "dotenv",
+        "documentation": {}
+    },
+    {
+        "label": "load_dotenv",
+        "importPath": "dotenv",
+        "description": "dotenv",
+        "isExtraImport": true,
+        "detail": "dotenv",
+        "documentation": {}
+    },
+    {
+        "label": "InferenceClient",
+        "importPath": "huggingface_hub",
+        "description": "huggingface_hub",
+        "isExtraImport": true,
+        "detail": "huggingface_hub",
+        "documentation": {}
+    },
+    {
+        "label": "login",
+        "importPath": "huggingface_hub",
+        "description": "huggingface_hub",
+        "isExtraImport": true,
+        "detail": "huggingface_hub",
+        "documentation": {}
+    },
+    {
+        "label": "HfHubHTTPError",
+        "importPath": "huggingface_hub.errors",
+        "description": "huggingface_hub.errors",
+        "isExtraImport": true,
+        "detail": "huggingface_hub.errors",
+        "documentation": {}
+    },
+    {
+        "label": "InferenceTimeoutError",
+        "importPath": "huggingface_hub.errors",
+        "description": "huggingface_hub.errors",
+        "isExtraImport": true,
+        "detail": "huggingface_hub.errors",
+        "documentation": {}
+    },
+    {
+        "label": "lru_cache",
+        "importPath": "functools",
+        "description": "functools",
+        "isExtraImport": true,
+        "detail": "functools",
+        "documentation": {}
+    },
+    {
+        "label": "pipeline",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
+        "label": "annotations",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "ipaddress",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "ipaddress",
+        "description": "ipaddress",
+        "detail": "ipaddress",
+        "documentation": {}
+    },
+    {
+        "label": "socket",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "socket",
+        "description": "socket",
+        "detail": "socket",
+        "documentation": {}
+    },
+    {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "urljoin",
+        "importPath": "urllib.parse",
+        "description": "urllib.parse",
+        "isExtraImport": true,
+        "detail": "urllib.parse",
+        "documentation": {}
+    },
+    {
+        "label": "urlparse",
+        "importPath": "urllib.parse",
+        "description": "urllib.parse",
+        "isExtraImport": true,
+        "detail": "urllib.parse",
+        "documentation": {}
+    },
+    {
+        "label": "httpx",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "httpx",
+        "description": "httpx",
+        "detail": "httpx",
+        "documentation": {}
+    },
+    {
+        "label": "BeautifulSoup",
+        "importPath": "bs4",
+        "description": "bs4",
+        "isExtraImport": true,
+        "detail": "bs4",
+        "documentation": {}
+    },
+    {
+        "label": "DDGS",
+        "importPath": "ddgs",
+        "description": "ddgs",
+        "isExtraImport": true,
+        "detail": "ddgs",
+        "documentation": {}
+    },
+    {
+        "label": "DDGSException",
+        "importPath": "ddgs.exceptions",
+        "description": "ddgs.exceptions",
+        "isExtraImport": true,
+        "detail": "ddgs.exceptions",
+        "documentation": {}
+    },
+    {
+        "label": "unittest",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "unittest",
+        "description": "unittest",
+        "detail": "unittest",
+        "documentation": {}
+    },
+    {
+        "label": "SimpleNamespace",
+        "importPath": "types",
+        "description": "types",
+        "isExtraImport": true,
+        "detail": "types",
+        "documentation": {}
+    },
+    {
+        "label": "Mock",
+        "importPath": "unittest.mock",
+        "description": "unittest.mock",
+        "isExtraImport": true,
+        "detail": "unittest.mock",
+        "documentation": {}
+    },
+    {
+        "label": "patch",
+        "importPath": "unittest.mock",
+        "description": "unittest.mock",
+        "isExtraImport": true,
+        "detail": "unittest.mock",
+        "documentation": {}
+    },
+    {
+        "label": "HuggingFaceInferenceChatModel",
+        "importPath": "src.first_agent.models",
+        "description": "src.first_agent.models",
+        "isExtraImport": true,
+        "detail": "src.first_agent.models",
+        "documentation": {}
+    },
+    {
+        "label": "TransformersChatModel",
+        "importPath": "src.first_agent.models",
+        "description": "src.first_agent.models",
+        "isExtraImport": true,
+        "detail": "src.first_agent.models",
+        "documentation": {}
+    },
+    {
+        "label": "create_chat_model",
+        "importPath": "src.first_agent.models",
+        "description": "src.first_agent.models",
+        "isExtraImport": true,
+        "detail": "src.first_agent.models",
+        "documentation": {}
+    },
+    {
+        "label": "ResearchSource",
+        "importPath": "src.first_agent.tools",
+        "description": "src.first_agent.tools",
+        "isExtraImport": true,
+        "detail": "src.first_agent.tools",
+        "documentation": {}
+    },
+    {
+        "label": "WebResearchTools",
+        "importPath": "src.first_agent.tools",
+        "description": "src.first_agent.tools",
+        "isExtraImport": true,
+        "detail": "src.first_agent.tools",
+        "documentation": {}
+    },
+    {
+        "label": "get_agent",
+        "kind": 2,
+        "importPath": "apps.streamlit_app",
+        "description": "apps.streamlit_app",
+        "peekOfCode": "def get_agent(model_id: str, system_prompt: str) -> LocalChatAgent:\n    return LocalChatAgent(model_id=model_id, system_prompt=system_prompt)\ndef reset_chat(system_prompt: str) -> None:\n    st.session_state.messages = [{\"role\": \"system\", \"content\": system_prompt}]\ndef render_message(content: str) -> None:\n    answer, separator, sources = content.partition(SOURCE_SEPARATOR)\n    duplicate_sources = re.search(\n        r\"\\n\\s*(?:#{1,6}\\s*)?(?:\\*\\*)?\"\n        r\"(?:sources?|references?|citations?)(?:\\*\\*)?\\s*:?\\s*\\n\",\n        answer,",
+        "detail": "apps.streamlit_app",
+        "documentation": {}
+    },
+    {
+        "label": "reset_chat",
+        "kind": 2,
+        "importPath": "apps.streamlit_app",
+        "description": "apps.streamlit_app",
+        "peekOfCode": "def reset_chat(system_prompt: str) -> None:\n    st.session_state.messages = [{\"role\": \"system\", \"content\": system_prompt}]\ndef render_message(content: str) -> None:\n    answer, separator, sources = content.partition(SOURCE_SEPARATOR)\n    duplicate_sources = re.search(\n        r\"\\n\\s*(?:#{1,6}\\s*)?(?:\\*\\*)?\"\n        r\"(?:sources?|references?|citations?)(?:\\*\\*)?\\s*:?\\s*\\n\",\n        answer,\n        flags=re.IGNORECASE,\n    )",
+        "detail": "apps.streamlit_app",
+        "documentation": {}
+    },
+    {
+        "label": "render_message",
+        "kind": 2,
+        "importPath": "apps.streamlit_app",
+        "description": "apps.streamlit_app",
+        "peekOfCode": "def render_message(content: str) -> None:\n    answer, separator, sources = content.partition(SOURCE_SEPARATOR)\n    duplicate_sources = re.search(\n        r\"\\n\\s*(?:#{1,6}\\s*)?(?:\\*\\*)?\"\n        r\"(?:sources?|references?|citations?)(?:\\*\\*)?\\s*:?\\s*\\n\",\n        answer,\n        flags=re.IGNORECASE,\n    )\n    if duplicate_sources:\n        answer = answer[: duplicate_sources.start()].rstrip()",
+        "detail": "apps.streamlit_app",
+        "documentation": {}
+    },
+    {
+        "label": "ROOT_DIR",
+        "kind": 5,
+        "importPath": "apps.streamlit_app",
+        "description": "apps.streamlit_app",
+        "peekOfCode": "ROOT_DIR = Path(__file__).resolve().parents[1]\nif str(ROOT_DIR) not in sys.path:\n    sys.path.insert(0, str(ROOT_DIR))\nfrom src.first_agent.agent import DEFAULT_MODEL_ID, DEFAULT_SYSTEM_PROMPT, LocalChatAgent\nSOURCE_SEPARATOR = \"\\n\\n**Sources**\\n\"\nst.set_page_config(\n    page_title=\"First Research Agent\",\n    layout=\"wide\",\n    initial_sidebar_state=\"expanded\",\n)",
+        "detail": "apps.streamlit_app",
+        "documentation": {}
+    },
+    {
+        "label": "SOURCE_SEPARATOR",
+        "kind": 5,
+        "importPath": "apps.streamlit_app",
+        "description": "apps.streamlit_app",
+        "peekOfCode": "SOURCE_SEPARATOR = \"\\n\\n**Sources**\\n\"\nst.set_page_config(\n    page_title=\"First Research Agent\",\n    layout=\"wide\",\n    initial_sidebar_state=\"expanded\",\n)\nst.markdown(\n    \"\"\"\n    <style>\n    .main .block-container {",
+        "detail": "apps.streamlit_app",
+        "documentation": {}
+    },
+    {
+        "label": "prompt",
+        "kind": 5,
+        "importPath": "apps.streamlit_app",
+        "description": "apps.streamlit_app",
+        "peekOfCode": "prompt = st.chat_input(\"What would you like to research?\", submit_mode=\"disable\")\nif prompt:\n    with st.chat_message(\"user\"):\n        st.markdown(prompt)\n    agent = get_agent(model_id=model_id, system_prompt=system_prompt)\n    with st.chat_message(\"assistant\"):\n        with st.spinner(\"Searching, reading, and summarizing...\"):\n            try:\n                reply, updated_messages = agent.generate_research_reply(\n                    chat_history=st.session_state.messages,",
+        "detail": "apps.streamlit_app",
+        "documentation": {}
+    },
+    {
+        "label": "ChatModel",
+        "kind": 6,
+        "importPath": "src.first_agent.models.base",
+        "description": "src.first_agent.models.base",
+        "peekOfCode": "class ChatModel(Protocol):\n    \"\"\"Provider-neutral text generation contract used by chat agents.\"\"\"\n    def generate(\n        self,\n        messages: list[ChatMessage],\n        *,\n        max_new_tokens: int = 200,\n        do_sample: bool = False,\n    ) -> str:\n        \"\"\"Generate one assistant response for a chat history.\"\"\"",
+        "detail": "src.first_agent.models.base",
+        "documentation": {}
+    },
+    {
+        "label": "ChatMessage",
+        "kind": 5,
+        "importPath": "src.first_agent.models.base",
+        "description": "src.first_agent.models.base",
+        "peekOfCode": "ChatMessage = dict[str, str]\nclass ChatModel(Protocol):\n    \"\"\"Provider-neutral text generation contract used by chat agents.\"\"\"\n    def generate(\n        self,\n        messages: list[ChatMessage],\n        *,\n        max_new_tokens: int = 200,\n        do_sample: bool = False,\n    ) -> str:",
+        "detail": "src.first_agent.models.base",
+        "documentation": {}
+    },
+    {
+        "label": "get_chat_model_backend",
+        "kind": 2,
+        "importPath": "src.first_agent.models.factory",
+        "description": "src.first_agent.models.factory",
+        "peekOfCode": "def get_chat_model_backend() -> str:\n    load_dotenv()\n    return os.getenv(\"CHAT_MODEL_BACKEND\", LOCAL_BACKEND).strip().lower()\ndef get_default_model_id(backend: str | None = None) -> str:\n    selected_backend = backend or get_chat_model_backend()\n    if selected_backend == HUGGINGFACE_BACKEND:\n        return os.getenv(\"HF_INFERENCE_MODEL_ID\", DEFAULT_HOSTED_MODEL_ID)\n    return os.getenv(\"HF_MODEL_ID\", DEFAULT_LOCAL_MODEL_ID)\ndef create_chat_model(\n    model_id: str | None = None,",
+        "detail": "src.first_agent.models.factory",
+        "documentation": {}
+    },
+    {
+        "label": "get_default_model_id",
+        "kind": 2,
+        "importPath": "src.first_agent.models.factory",
+        "description": "src.first_agent.models.factory",
+        "peekOfCode": "def get_default_model_id(backend: str | None = None) -> str:\n    selected_backend = backend or get_chat_model_backend()\n    if selected_backend == HUGGINGFACE_BACKEND:\n        return os.getenv(\"HF_INFERENCE_MODEL_ID\", DEFAULT_HOSTED_MODEL_ID)\n    return os.getenv(\"HF_MODEL_ID\", DEFAULT_LOCAL_MODEL_ID)\ndef create_chat_model(\n    model_id: str | None = None,\n    *,\n    backend: str | None = None,\n) -> ChatModel:",
+        "detail": "src.first_agent.models.factory",
+        "documentation": {}
+    },
+    {
+        "label": "create_chat_model",
+        "kind": 2,
+        "importPath": "src.first_agent.models.factory",
+        "description": "src.first_agent.models.factory",
+        "peekOfCode": "def create_chat_model(\n    model_id: str | None = None,\n    *,\n    backend: str | None = None,\n) -> ChatModel:\n    load_dotenv()\n    selected_backend = (backend or get_chat_model_backend()).strip().lower()\n    selected_model = model_id or get_default_model_id(selected_backend)\n    if selected_backend == LOCAL_BACKEND:\n        return TransformersChatModel(selected_model)",
+        "detail": "src.first_agent.models.factory",
+        "documentation": {}
+    },
+    {
+        "label": "LOCAL_BACKEND",
+        "kind": 5,
+        "importPath": "src.first_agent.models.factory",
+        "description": "src.first_agent.models.factory",
+        "peekOfCode": "LOCAL_BACKEND = \"local\"\nHUGGINGFACE_BACKEND = \"huggingface\"\nDEFAULT_LOCAL_MODEL_ID = \"HuggingFaceTB/SmolLM2-360M-Instruct\"\nDEFAULT_HOSTED_MODEL_ID = \"Qwen/Qwen2.5-7B-Instruct-1M\"\nDEFAULT_HOSTED_PROVIDER = \"featherless-ai\"\ndef get_chat_model_backend() -> str:\n    load_dotenv()\n    return os.getenv(\"CHAT_MODEL_BACKEND\", LOCAL_BACKEND).strip().lower()\ndef get_default_model_id(backend: str | None = None) -> str:\n    selected_backend = backend or get_chat_model_backend()",
+        "detail": "src.first_agent.models.factory",
+        "documentation": {}
+    },
+    {
+        "label": "HUGGINGFACE_BACKEND",
+        "kind": 5,
+        "importPath": "src.first_agent.models.factory",
+        "description": "src.first_agent.models.factory",
+        "peekOfCode": "HUGGINGFACE_BACKEND = \"huggingface\"\nDEFAULT_LOCAL_MODEL_ID = \"HuggingFaceTB/SmolLM2-360M-Instruct\"\nDEFAULT_HOSTED_MODEL_ID = \"Qwen/Qwen2.5-7B-Instruct-1M\"\nDEFAULT_HOSTED_PROVIDER = \"featherless-ai\"\ndef get_chat_model_backend() -> str:\n    load_dotenv()\n    return os.getenv(\"CHAT_MODEL_BACKEND\", LOCAL_BACKEND).strip().lower()\ndef get_default_model_id(backend: str | None = None) -> str:\n    selected_backend = backend or get_chat_model_backend()\n    if selected_backend == HUGGINGFACE_BACKEND:",
+        "detail": "src.first_agent.models.factory",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_LOCAL_MODEL_ID",
+        "kind": 5,
+        "importPath": "src.first_agent.models.factory",
+        "description": "src.first_agent.models.factory",
+        "peekOfCode": "DEFAULT_LOCAL_MODEL_ID = \"HuggingFaceTB/SmolLM2-360M-Instruct\"\nDEFAULT_HOSTED_MODEL_ID = \"Qwen/Qwen2.5-7B-Instruct-1M\"\nDEFAULT_HOSTED_PROVIDER = \"featherless-ai\"\ndef get_chat_model_backend() -> str:\n    load_dotenv()\n    return os.getenv(\"CHAT_MODEL_BACKEND\", LOCAL_BACKEND).strip().lower()\ndef get_default_model_id(backend: str | None = None) -> str:\n    selected_backend = backend or get_chat_model_backend()\n    if selected_backend == HUGGINGFACE_BACKEND:\n        return os.getenv(\"HF_INFERENCE_MODEL_ID\", DEFAULT_HOSTED_MODEL_ID)",
+        "detail": "src.first_agent.models.factory",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_HOSTED_MODEL_ID",
+        "kind": 5,
+        "importPath": "src.first_agent.models.factory",
+        "description": "src.first_agent.models.factory",
+        "peekOfCode": "DEFAULT_HOSTED_MODEL_ID = \"Qwen/Qwen2.5-7B-Instruct-1M\"\nDEFAULT_HOSTED_PROVIDER = \"featherless-ai\"\ndef get_chat_model_backend() -> str:\n    load_dotenv()\n    return os.getenv(\"CHAT_MODEL_BACKEND\", LOCAL_BACKEND).strip().lower()\ndef get_default_model_id(backend: str | None = None) -> str:\n    selected_backend = backend or get_chat_model_backend()\n    if selected_backend == HUGGINGFACE_BACKEND:\n        return os.getenv(\"HF_INFERENCE_MODEL_ID\", DEFAULT_HOSTED_MODEL_ID)\n    return os.getenv(\"HF_MODEL_ID\", DEFAULT_LOCAL_MODEL_ID)",
+        "detail": "src.first_agent.models.factory",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_HOSTED_PROVIDER",
+        "kind": 5,
+        "importPath": "src.first_agent.models.factory",
+        "description": "src.first_agent.models.factory",
+        "peekOfCode": "DEFAULT_HOSTED_PROVIDER = \"featherless-ai\"\ndef get_chat_model_backend() -> str:\n    load_dotenv()\n    return os.getenv(\"CHAT_MODEL_BACKEND\", LOCAL_BACKEND).strip().lower()\ndef get_default_model_id(backend: str | None = None) -> str:\n    selected_backend = backend or get_chat_model_backend()\n    if selected_backend == HUGGINGFACE_BACKEND:\n        return os.getenv(\"HF_INFERENCE_MODEL_ID\", DEFAULT_HOSTED_MODEL_ID)\n    return os.getenv(\"HF_MODEL_ID\", DEFAULT_LOCAL_MODEL_ID)\ndef create_chat_model(",
+        "detail": "src.first_agent.models.factory",
+        "documentation": {}
+    },
+    {
+        "label": "HuggingFaceInferenceChatModel",
+        "kind": 6,
+        "importPath": "src.first_agent.models.huggingface_inference",
+        "description": "src.first_agent.models.huggingface_inference",
+        "peekOfCode": "class HuggingFaceInferenceChatModel:\n    \"\"\"Hosted chat-model adapter using Hugging Face Inference Providers.\"\"\"\n    def __init__(\n        self,\n        model_id: str,\n        *,\n        token: str,\n        provider: str = \"auto\",\n        timeout: float = 60.0,\n        client: Any | None = None,",
+        "detail": "src.first_agent.models.huggingface_inference",
+        "documentation": {}
+    },
+    {
+        "label": "TransformersChatModel",
+        "kind": 6,
+        "importPath": "src.first_agent.models.transformers",
+        "description": "src.first_agent.models.transformers",
+        "peekOfCode": "class TransformersChatModel:\n    \"\"\"Local chat-model adapter backed by a Transformers pipeline.\"\"\"\n    def __init__(self, model_id: str) -> None:\n        self.model_id = model_id\n    def generate(\n        self,\n        messages: list[ChatMessage],\n        *,\n        max_new_tokens: int = 200,\n        do_sample: bool = False,",
+        "detail": "src.first_agent.models.transformers",
+        "documentation": {}
+    },
+    {
+        "label": "SearchResult",
+        "kind": 6,
+        "importPath": "src.first_agent.tools.web_research",
+        "description": "src.first_agent.tools.web_research",
+        "peekOfCode": "class SearchResult:\n    title: str\n    url: str\n    snippet: str\n@dataclass(frozen=True)\nclass ResearchSource:\n    title: str\n    url: str\n    content: str\nclass WebResearchTools:",
+        "detail": "src.first_agent.tools.web_research",
+        "documentation": {}
+    },
+    {
+        "label": "ResearchSource",
+        "kind": 6,
+        "importPath": "src.first_agent.tools.web_research",
+        "description": "src.first_agent.tools.web_research",
+        "peekOfCode": "class ResearchSource:\n    title: str\n    url: str\n    content: str\nclass WebResearchTools:\n    \"\"\"Keyless web search and page retrieval behind a replaceable tool boundary.\"\"\"\n    def __init__(self, timeout: float = 15.0, max_chars_per_source: int = 1800) -> None:\n        self.timeout = timeout\n        self.max_chars_per_source = max_chars_per_source\n        self.max_response_bytes = 2_000_000",
+        "detail": "src.first_agent.tools.web_research",
+        "documentation": {}
+    },
+    {
+        "label": "WebResearchTools",
+        "kind": 6,
+        "importPath": "src.first_agent.tools.web_research",
+        "description": "src.first_agent.tools.web_research",
+        "peekOfCode": "class WebResearchTools:\n    \"\"\"Keyless web search and page retrieval behind a replaceable tool boundary.\"\"\"\n    def __init__(self, timeout: float = 15.0, max_chars_per_source: int = 1800) -> None:\n        self.timeout = timeout\n        self.max_chars_per_source = max_chars_per_source\n        self.max_response_bytes = 2_000_000\n    def search_web(self, query: str, max_results: int = 4) -> list[SearchResult]:\n        rows = DDGS(timeout=int(self.timeout)).text(\n            query,\n            region=\"wt-wt\",",
+        "detail": "src.first_agent.tools.web_research",
+        "documentation": {}
+    },
+    {
+        "label": "LocalChatAgent",
+        "kind": 6,
+        "importPath": "src.first_agent.agent",
+        "description": "src.first_agent.agent",
+        "peekOfCode": "class LocalChatAgent:\n    def __init__(\n        self,\n        model_id: str | None = None,\n        system_prompt: str = DEFAULT_SYSTEM_PROMPT,\n        research_tools: WebResearchTools | None = None,\n        chat_model: ChatModel | None = None,\n    ) -> None:\n        self.model_id = model_id or get_default_model_id()\n        self.system_prompt = system_prompt",
+        "detail": "src.first_agent.agent",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_MODEL_ID",
+        "kind": 5,
+        "importPath": "src.first_agent.agent",
+        "description": "src.first_agent.agent",
+        "peekOfCode": "DEFAULT_MODEL_ID = get_default_model_id()\nDEFAULT_SYSTEM_PROMPT = (\n    \"You are a concise research assistant. Answer only from the supplied web research. \"\n    \"Clearly state when the sources do not contain enough evidence.\"\n)\nclass LocalChatAgent:\n    def __init__(\n        self,\n        model_id: str | None = None,\n        system_prompt: str = DEFAULT_SYSTEM_PROMPT,",
+        "detail": "src.first_agent.agent",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_SYSTEM_PROMPT",
+        "kind": 5,
+        "importPath": "src.first_agent.agent",
+        "description": "src.first_agent.agent",
+        "peekOfCode": "DEFAULT_SYSTEM_PROMPT = (\n    \"You are a concise research assistant. Answer only from the supplied web research. \"\n    \"Clearly state when the sources do not contain enough evidence.\"\n)\nclass LocalChatAgent:\n    def __init__(\n        self,\n        model_id: str | None = None,\n        system_prompt: str = DEFAULT_SYSTEM_PROMPT,\n        research_tools: WebResearchTools | None = None,",
+        "detail": "src.first_agent.agent",
+        "documentation": {}
+    },
+    {
+        "label": "FakeResearchTools",
+        "kind": 6,
+        "importPath": "tests.test_research_agent",
+        "description": "tests.test_research_agent",
+        "peekOfCode": "class FakeResearchTools:\n    def research(self, query: str, max_sources: int = 3) -> list[ResearchSource]:\n        assert query == \"test topic\"\n        assert max_sources == 2\n        return [\n            ResearchSource(\n                title=\"Primary source\",\n                url=\"https://example.com/report\",\n                content=\"The verified result is 42.\",\n            )",
+        "detail": "tests.test_research_agent",
+        "documentation": {}
+    },
+    {
+        "label": "FakeChatModel",
+        "kind": 6,
+        "importPath": "tests.test_research_agent",
+        "description": "tests.test_research_agent",
+        "peekOfCode": "class FakeChatModel:\n    def __init__(self, reply: str = \"The result is 42.\") -> None:\n        self.reply = reply\n        self.calls: list[tuple[list[dict[str, str]], int, bool]] = []\n    def generate(\n        self,\n        messages: list[dict[str, str]],\n        *,\n        max_new_tokens: int = 200,\n        do_sample: bool = False,",
+        "detail": "tests.test_research_agent",
+        "documentation": {}
+    },
+    {
+        "label": "ResearchAgentTests",
+        "kind": 6,
+        "importPath": "tests.test_research_agent",
+        "description": "tests.test_research_agent",
+        "peekOfCode": "class ResearchAgentTests(unittest.TestCase):\n    def test_huggingface_adapter_maps_chat_request_and_response(self) -> None:\n        client = Mock()\n        client.chat_completion.return_value = SimpleNamespace(\n            choices=[SimpleNamespace(message=SimpleNamespace(content=\"Hosted reply\"))]\n        )\n        model = HuggingFaceInferenceChatModel(\n            \"test/hosted-model\",\n            token=\"test-token\",\n            provider=\"auto\",",
+        "detail": "tests.test_research_agent",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "first_agent",
+        "description": "first_agent",
+        "peekOfCode": "def main() -> None:\n    agent = LocalChatAgent()\n    chat = agent.new_chat()\n    print(f\"Loading {agent.model_id} on first question...\")\n    print(\"Agent ready! Type a question, or 'quit' to stop.\\n\")\n    while True:\n        try:\n            user_input = input(\"> \").strip()\n            if user_input.lower() in {\"quit\", \"exit\"}:\n                print(\"Goodbye!\")",
+        "detail": "first_agent",
+        "documentation": {}
+    }
+]

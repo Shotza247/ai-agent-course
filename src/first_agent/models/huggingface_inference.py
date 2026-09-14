@@ -32,7 +32,7 @@ class HuggingFaceInferenceChatModel:
         self,
         messages: list[ChatMessage],
         *,
-        max_new_tokens: int = 200,
+        max_new_tokens: int = 500,
         do_sample: bool = False,
     ) -> str:
         try:
