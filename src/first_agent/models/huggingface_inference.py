@@ -40,7 +40,7 @@ class HuggingFaceInferenceChatModel:
                 messages,
                 model=self.model_id,
                 max_tokens=max_new_tokens,
-                temperature=None if do_sample else 0.0,
+                temperature=0.1 if do_sample else 0.0,
             )
         except (HfHubHTTPError, InferenceTimeoutError, OSError) as exc:
             raise RuntimeError(

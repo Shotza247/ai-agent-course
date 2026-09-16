@@ -1,5 +1,16 @@
 # Audit Log
 
+## 2026-09-16 15:49 - Hosted Sampling Configuration
+
+- Status: passed
+- Goal: Record and validate the hosted inference sampling adjustment as its own model-behavior lifecycle change.
+- Scope: Hugging Face inference adapter and adapter unit tests.
+- Changes:
+  - Set sampled hosted requests to a low explicit temperature of `0.1` while preserving deterministic requests at `0.0`.
+  - Added request-mapping coverage for the sampled path.
+- Verification: `python -m unittest discover -s tests -v` passed all 17 tests, including the sampled request mapping.
+- Follow-up: none.
+
 ## 2026-09-16 15:24 - Research Agent Structure and Memory Foundation
 
 - Status: passed

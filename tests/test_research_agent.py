@@ -80,6 +80,29 @@ class ResearchAgentTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "empty response"):
             model.generate([{"role": "user", "content": "Hello"}])
 
+    def test_huggingface_adapter_uses_low_temperature_when_sampling(self) -> None:
+        client = Mock()
+        client.chat_completion.return_value = SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content="Varied reply"))]
+        )
+        model = HuggingFaceInferenceChatModel(
+            "test/hosted-model",
+            token="test-token",
+            client=client,
+        )
+
+        model.generate(
+            [{"role": "user", "content": "Explore alternatives"}],
+            do_sample=True,
+        )
+
+        client.chat_completion.assert_called_once_with(
+            [{"role": "user", "content": "Explore alternatives"}],
+            model="test/hosted-model",
+            max_tokens=500,
+            temperature=0.1,
+        )
+
     def test_huggingface_adapter_translates_dns_failure(self) -> None:
         client = Mock()
         client.chat_completion.side_effect = OSError(11001, "getaddrinfo failed")

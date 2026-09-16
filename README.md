@@ -101,7 +101,7 @@ python -m compileall first_agent.py apps src tests
 git diff --check
 ```
 
-The current suite contains 16 tests covering model adapters, backend selection,
+The current suite contains 17 tests covering model adapters, backend selection,
 hosted request mapping, empty and unreachable provider responses, search-result
 mapping, DNS recovery, HTML extraction, public-URL enforcement, agent-tool
 integration, chat history, citation cleanup, workflow routing, checkpointed
