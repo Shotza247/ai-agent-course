@@ -1,149 +1,122 @@
-# First Agent
+---
+noteId: "0fa10530acf211f18d028128fd438deb"
+tags: []
 
-This project contains a lightweight local LLM agent, a reusable Python service
-layer, a FastAPI HTTP service, and a Streamlit web frontend for it.
+---
 
-## Setup
+# Research Agent
 
-Create a virtual environment:
+A Python research-agent project with CLI, FastAPI, and Streamlit entry points.
+The current product scope is one research agent. LangGraph planning and LLM
+synthesis are proposed next steps, not implemented capabilities.
 
-```
-py -m venv .venv
-```
+The repository also contains earlier investment-analysis scaffolding. The default
+CLI and API still use keyword routing and template summaries. Local Hugging Face
+chat runs separately with `--local-llm`.
 
-Activate it:
+Documentation reconciled with source on 2026-09-16. LangChain,
+`langchain-huggingface`, and LangGraph are declared dependencies only: the runtime
+does not import them or construct a graph. The local model uses Transformers.
 
-```
-.venv\Scripts\Activate.ps1
-```
+## Project Map
 
-Install PyTorch first. This is required before `transformers` can load the model.
+- [Architecture and folder responsibilities](docs/ARCHITECTURE.md)
+- [Exact system prompt and where it applies](docs/RESEARCH_PROMPT.md)
+- [Setup, Google Sheets, and provider configuration](docs/SETUP.md)
+- [Investigation history](AUDIT_LOG.md)
 
-If your laptop does not have a dedicated NVIDIA GPU, install the lighter CPU-only
-build:
-
-```
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-```
-
-If you still see an error like `ModuleNotFoundError: No module named 'torchvision'`,
-install torchvision with a matching wheel for your PyTorch version:
-
-```
-pip install torchvision --index-url https://download.pytorch.org/whl/cpu
-```
-
-If you use conda, you can also install with:
-
-```
-conda install -c pytorch torchvision
+```text
+first_agent.py           CLI launcher and compatibility imports
+agent_api.py             FastAPI launcher
+streamlit_frontend.py    Streamlit launcher
+src/investment_agents/   Existing Python package
+tests/                  Automated behavior and API contract tests
+docs/                   Architecture, setup, and system-prompt documentation
 ```
 
-If you do have an NVIDIA GPU and want CUDA acceleration, use the command generator at
-https://pytorch.org/get-started/locally/ instead.
+## Run
 
-Install the rest of the project dependencies:
+Use the existing virtual environment, or follow the
+[setup instructions](docs/SETUP.md#install).
+Create `.env` from `.env.example` only if it does not already exist.
 
-```
-pip install -r requirements.txt
-```
-
-Verify the setup:
-
-```
-py -c "import torch, transformers; print('The setup was successful, PyTorch:', torch.__version__)"
+```powershell
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+notepad .env
 ```
 
-You should see something like: `The setup was successful, PyTorch: 2.x.x`
+`.env.example` is a template, not a loaded configuration file. Never put real keys
+in that template. Provider keys enable the existing adapters; `OPENAI_API_KEY`,
+`OPENAI_MODEL`, `LLM_PROVIDER`, and `LLM_MAX_OUTPUT_TOKENS` are currently unused by
+the response-generation path. Setting them does not activate an LLM in the API.
 
-## Run the CLI agent
+In one terminal, start FastAPI:
 
-```
-py first_agent.py
-```
-
-This starts a terminal-based chat loop using the `HuggingFaceTB/SmolLM2-360M-Instruct`
-model. The CLI is a thin wrapper around the reusable `FirstAgent` service.
-
-## Reuse the agent from other apps
-
-`first_agent.py` is import-safe: importing it does not start the terminal chat loop or
-load the model immediately. You can use the same service layer from FastAPI, Streamlit,
-tests, notebooks, or future JavaScript/React-backed APIs.
-
-```python
-from first_agent import FirstAgent
-
-agent = FirstAgent()
-chat = agent.new_chat()
-result = agent.respond("Hello!", chat=chat)
-
-print(result.reply)
-chat = result.chat
+```powershell
+.venv\Scripts\python.exe -m uvicorn agent_api:app --reload --port 8001
 ```
 
-Useful exports:
-- `FirstAgent`: reusable service object with lazy model loading.
-- `initial_chat()`: creates a fresh chat history.
-- `AgentResponse`: structured response containing `chat`, `reply`, and elapsed time.
-- `DEFAULT_MODEL_ID`: the shared model identifier.
+In another terminal, point Streamlit at that API:
 
-## Run the FastAPI service
-
-```
-uvicorn agent_api:app --reload --port 8000
+```powershell
+$env:AGENT_API_URL = "http://localhost:8001"
+.venv\Scripts\python.exe -m streamlit run streamlit_frontend.py --server.port 8501
 ```
 
-The API exposes:
+API docs: http://localhost:8001/docs. Streamlit normally opens at
+http://localhost:8501. Port 8001 is an alternative to the previously blocked 8000;
+local Windows port restrictions may still apply.
 
-- `GET /health`: returns service status and the configured model id.
-- `POST /chat`: accepts a user message and optional chat history, then returns the
-  assistant reply and updated chat history.
+Run the existing default CLI with `.venv\Scripts\python.exe first_agent.py`.
+Add `--local-llm` for the separate local model chat.
 
-Example request:
+To restart, press Ctrl+C in each service terminal and run its command again.
+Use **Clear conversation** in Streamlit to reset an old session's system message.
+The Streamlit API URL is read from the process environment or sidebar, so use the
+explicit environment assignment above rather than relying on `.env` for this UI setting.
 
-```json
-{
-  "message": "Hello!",
-  "chat": [
-    {"role": "system", "content": "You are a helpful, concise assistant."}
-  ]
-}
+## Quick Checks
+
+Open http://localhost:8001/docs or use PowerShell:
+
+```powershell
+Invoke-RestMethod http://localhost:8001/health
+Invoke-RestMethod http://localhost:8001/tools/readiness
+$body = @{ message = "Research news sentiment" } | ConvertTo-Json
+$result = Invoke-RestMethod http://localhost:8001/chat -Method Post -ContentType "application/json" -Body $body
+$result.reply
+$result.trace_id
 ```
 
-The service is stateless. The client sends the current chat history with each request,
-which keeps it straightforward for Streamlit, React, or any other frontend.
+The no-ticker prompt should return a needs-symbol answer. Try `Research AAPL news
+sentiment` to exercise provider tools; expect evidence or an explicit unavailable
+source status. In Streamlit, check the sidebar API URL, send the same prompts, and
+inspect the Trace tab. Readiness means settings are present, not that credentials
+or live provider access have been validated.
 
-## Run the Streamlit frontend
+## Docker Status
 
-Start the FastAPI service first, then run:
+Docker files exist, but a successful full build has not been verified in the latest
+investigation. The diagnostic build was stopped during base-image setup; the user's
+original build failure remains unresolved. Capture a full attempt with
+`docker compose --progress plain build`.
 
+Compose publishes API port 8000 and UI port 8501; its Streamlit service uses
+`http://api:8000` internally. These differ from the local API command above.
+Avoid running local and Docker UIs on the same host port. A Windows service-account
+path is not usable inside Linux containers without mounting the file and configuring
+its container path. The supplied Compose file does not mount that credential file.
+
+## Tests
+
+```powershell
+.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
-streamlit run streamlit_frontend.py
-```
 
-Then open the local URL shown in the terminal, usually `http://localhost:8501`.
-By default the Streamlit app calls `http://localhost:8000`. You can point it to a
-different backend with the sidebar field or by setting `AGENT_API_URL`.
+Passing tests establishes behavior for their inputs and fixtures. Live provider
+access, real model answer quality, and browser chat require separate checks.
 
-The frontend lets you:
-- send prompts through a chat interface
-- call the FastAPI-backed agent endpoint
-- clear the conversation
-- check the backend status
-
-## Notes
-
-- `HF_TOKEN` in a `.env` file is optional. It is only needed for gated/private models
-  or to raise your Hugging Face API rate limits. The model used here is public.
-- The original script pointed at `deepseek-ai/DeepSeek-V4-Pro-0813`, which is a
-  1.57-trillion-parameter server-scale model and not something a laptop can load
-  locally. `first_agent.py` now uses a ~360M-parameter model instead, which downloads
-  quickly and runs on CPU.
-- If you want noticeably better answers and do not mind a slower first load, pass a
-  different `model_id` to `FirstAgent`, such as `"Qwen/Qwen2.5-0.5B-Instruct"` or
-  `"HuggingFaceTB/SmolLM2-1.7B-Instruct"`.
-- The CLI and FastAPI service use the same reusable service layer instead of duplicating
-  model and response-parsing logic.
-- The Streamlit app talks to FastAPI over HTTP, which mirrors how a future React
-  application can consume the same agent.
+The existing suite covers ticker routing, ledger/watchlist parsing, FX, cache
+behavior, provider failures, trace helpers, and API contracts. It does not test a
+LangGraph workflow or LLM synthesis because those are not implemented. Historical
+test results are recorded in the audit log; they are not fresh verification.
