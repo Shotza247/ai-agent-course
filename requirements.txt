@@ -1,5 +1,6 @@
 langchain
 langchain-huggingface
+langgraph
 transformers
 # Pinned to known-compatible CPU builds - adjust if you need CUDA versions
 torch==2.10.0
@@ -13,3 +14,6 @@ streamlit
 fastapi
 uvicorn[standard]
 requests
+google-api-python-client
+google-auth
+duckdb
