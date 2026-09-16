@@ -25,14 +25,35 @@ the `**Sources**` marker and rendered in a collapsed expander.
 
 ### Agent
 
-`src/first_agent/agent.py` owns the current deterministic research sequence:
+`src/first_agent/agents/research_agent.py` is the public facade. It composes the
+model, tools, skill, memory, and workflow while preserving the existing
+`LocalChatAgent` interface. `src/first_agent/agent.py` remains a compatibility
+import for existing callers.
+
+### Workflow
+
+`src/first_agent/workflows/research.py` owns the deterministic LangGraph sequence:
 
 1. Accept the user question and chat history.
 2. Ask `WebResearchTools` for public sources.
-3. Build an evidence-only synthesis prompt.
-4. Ask the configured `ChatModel` for a summary.
-5. Remove model-generated citation sections.
-6. Append links from the retrieved source objects.
+3. Route no-source requests to a stable recovery answer.
+4. Build an evidence-only synthesis prompt through the research skill.
+5. Ask the configured `ChatModel` for a summary.
+6. Remove model-generated citation sections and append authoritative links.
+
+The compiled graph uses an in-memory checkpointer. Each run can receive a
+`thread_id`, allowing callers to inspect thread-scoped workflow state during
+local development.
+
+### Memory
+
+`src/first_agent/memory/short_term.py` provides LangGraph checkpoint memory.
+It is process-local and is not suitable for durable deployment storage.
+
+`src/first_agent/memory/long_term.py` provides a small namespaced in-memory
+contract for explicit saved preferences or research metadata. It is tested but
+is not automatically populated by the agent. A durable database-backed store,
+retention rules, and user consent should precede production use.
 
 ### Model Boundary
 
@@ -67,7 +88,9 @@ Python dependency. Its return values are structured `ResearchSource` objects.
 - Complete: extract a provider-neutral model adapter.
 - Complete: connect the adapter to Hugging Face Inference Providers.
 - Complete: preserve Streamlit chat and Sources behavior.
-- Next: introduce LangGraph around research, tool, and synthesis nodes.
+- Complete: introduce LangGraph around research, tool, and synthesis nodes.
+- Complete: add development short-term checkpoints and a namespaced long-term
+  memory contract without silently storing user content.
 - Planned: expose the completed workflow through FastAPI `/health`, `/chat`, and
   `/agents/{agent_id}/chat` endpoints.
 - Planned: replace or supplement in-process tools with streamable HTTP MCP

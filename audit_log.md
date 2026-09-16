@@ -1,5 +1,28 @@
 # Audit Log
 
+## 2026-09-16 15:24 - Research Agent Structure and Memory Foundation
+
+- Status: passed
+- Goal: Adapt the supplied RAG-style structure into a clean, reusable research-agent architecture with skills, tools, workflow orchestration, and memory boundaries.
+- Scope: agent composition, LangGraph workflow, short- and long-term memory contracts, prompts, configuration, tests, dependencies, and documentation.
+- Decisions:
+  - Keep RAG-only ingestion, chunking, embeddings, and vector storage out of the base agent until document retrieval is required.
+  - Preserve `LocalChatAgent` and the Streamlit response contract while moving orchestration into LangGraph.
+  - Use thread-scoped in-memory checkpoints for development; keep long-term writes explicit and namespaced.
+  - Preserve the existing user-authored Hugging Face temperature change unchanged.
+- Changes:
+  - Added `agents/`, `workflows/`, `memory/`, `skills/`, `prompts/`, and `config/` packages under `src/first_agent/`.
+  - Added a deterministic research graph with search, no-source routing, evidence preparation, synthesis, and finalization nodes.
+  - Added an in-memory LangGraph checkpointer and a namespaced long-term memory contract.
+  - Reduced `src/first_agent/agent.py` to a backward-compatible import surface.
+  - Added `docs/PROJECT_STRUCTURE.md` and updated architecture and setup documentation.
+- Verification:
+  - `python -m unittest discover -s tests -v`: passed 16 tests.
+  - `python -m compileall -q first_agent.py apps src tests`: passed.
+  - `git diff --check`: passed; only existing line-ending notices were emitted.
+  - Checkpoint state uses plain typed dictionaries, avoiding the strict MessagePack warning produced by serializing custom source dataclasses.
+- Follow-up: Replace development memory with durable storage when FastAPI introduces authenticated users and deployment concurrency.
+
 ## 2026-09-08 10:38 - Financial Multi-Agent Blueprint
 
 - Status: passed

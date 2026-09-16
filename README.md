@@ -8,15 +8,18 @@ search and scraping, and swappable local or hosted Hugging Face inference.
 ```text
 Streamlit UI
   -> LocalChatAgent
-     -> WebResearchTools (search, retrieve, extract)
-     -> ChatModel adapter
-        -> local Transformers pipeline
-        or Hugging Face Inference Providers
+     -> LangGraph research workflow
+        -> WebResearchTools (search, retrieve, extract)
+        -> ResearchSynthesisSkill
+        -> ChatModel adapter
+           -> local Transformers pipeline
+           or Hugging Face Inference Providers
 ```
 
-The intended next architecture is documented in
-[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). FastAPI, LangGraph, and MCP are
-planned boundaries; they are not active in the current request path.
+The architecture is documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md),
+and the folder responsibilities are mapped in
+[`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md). FastAPI and MCP remain
+planned boundaries; LangGraph now runs the research workflow.
 
 The proposed financial multi-agent system and its implementation gates are in
 [`docs/FINANCIAL_RESEARCH_BLUEPRINT.md`](docs/FINANCIAL_RESEARCH_BLUEPRINT.md).
@@ -98,10 +101,11 @@ python -m compileall first_agent.py apps src tests
 git diff --check
 ```
 
-The current suite contains 13 tests covering model adapters, backend selection,
+The current suite contains 16 tests covering model adapters, backend selection,
 hosted request mapping, empty and unreachable provider responses, search-result
 mapping, DNS recovery, HTML extraction, public-URL enforcement, agent-tool
-integration, chat history, and citation cleanup.
+integration, chat history, citation cleanup, workflow routing, checkpointed
+short-term state, and namespaced long-term memory.
 
 Live search and hosted inference are smoke-tested separately because public
 services, account credits, and provider availability are not deterministic.
@@ -109,14 +113,20 @@ services, account credits, and provider availability are not deterministic.
 ## Project Structure
 
 - `apps/`: Streamlit and future interface entry points.
-- `src/first_agent/agent.py`: research-agent orchestration.
+- `src/first_agent/agents/`: public agent facades.
+- `src/first_agent/workflows/`: LangGraph state, nodes, and routing.
+- `src/first_agent/memory/`: short-term checkpoints and long-term memory stores.
+- `src/first_agent/skills/`: reusable research behaviors and response rules.
+- `src/first_agent/prompts/`: prompt construction.
+- `src/first_agent/config/`: code-level defaults.
 - `src/first_agent/models/`: neutral model contract, factory, and adapters.
 - `src/first_agent/tools/`: web search and scraping tools.
+- `src/first_agent/agent.py`: backward-compatible public import path.
 - `tests/`: deterministic unit and integration-boundary tests.
 - `docs/`: architecture and operating guides.
 - `logs/`: runtime, crash, replay, and test logs; no `.log` files belong in the project root.
 - `assets/`: future images, documents, and static assets.
-- `skills/`: future custom agent skills.
+- `skills/`: future distributable skill definitions and instructions.
 - `mcp/`: future MCP server configuration and setup.
 - `tools/`: future standalone tool adapters and helper scripts.
 - `audit_log.md`: chronological implementation and incident trail.
