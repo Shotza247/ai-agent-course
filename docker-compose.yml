@@ -1,0 +1,46 @@
+services:
+  api:
+    build: .
+    command: uvicorn investment_agents.api.app:app --host 0.0.0.0 --port 8000
+    environment:
+      PYTHONPATH: /app/src
+      APP_ENV: docker
+      HF_MODEL_ID: ${HF_MODEL_ID:-HuggingFaceTB/SmolLM2-360M-Instruct}
+      HF_TOKEN: ${HF_TOKEN:-}
+      GOOGLE_LEDGER_SHEET_ID: ${GOOGLE_LEDGER_SHEET_ID:-}
+      GOOGLE_LEDGER_RANGE: ${GOOGLE_LEDGER_RANGE:-Ledger!A:Z}
+      GOOGLE_WATCHLIST_RANGE: ${GOOGLE_WATCHLIST_RANGE:-}
+      GOOGLE_SERVICE_ACCOUNT_FILE: ${GOOGLE_SERVICE_ACCOUNT_FILE:-}
+      FINNHUB_API_KEY: ${FINNHUB_API_KEY:-}
+      ALPHAVANTAGE_API_KEY: ${ALPHAVANTAGE_API_KEY:-}
+      FINNHUB_SYMBOL_ALIASES: ${FINNHUB_SYMBOL_ALIASES:-}
+      ALPHAVANTAGE_SYMBOL_ALIASES: ${ALPHAVANTAGE_SYMBOL_ALIASES:-}
+      OBSERVABILITY_ENABLED: ${OBSERVABILITY_ENABLED:-true}
+      OBSERVABILITY_LOG_PATH: ${OBSERVABILITY_LOG_PATH:-/app/data/observability/events.jsonl}
+      OBSERVABILITY_MAX_EVENTS: ${OBSERVABILITY_MAX_EVENTS:-500}
+      STORAGE_DB_PATH: ${STORAGE_DB_PATH:-/app/data/investment_agents.duckdb}
+      MARKET_CACHE_TTL_SECONDS: ${MARKET_CACHE_TTL_SECONDS:-900}
+      MAX_ENRICHMENT_SYMBOLS: ${MAX_ENRICHMENT_SYMBOLS:-3}
+      CONCENTRATION_ALERT_THRESHOLD: ${CONCENTRATION_ALERT_THRESHOLD:-0.40}
+      LOSS_ALERT_THRESHOLD: ${LOSS_ALERT_THRESHOLD:-0.10}
+      REPORTING_CURRENCY: ${REPORTING_CURRENCY:-USD}
+      STATIC_FX_RATES: ${STATIC_FX_RATES:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - agent-data:/app/data
+
+  streamlit:
+    build: .
+    command: streamlit run streamlit_frontend.py --server.address 0.0.0.0 --server.port 8501
+    environment:
+      PYTHONPATH: /app/src
+      AGENT_API_URL: http://api:8000
+      APP_ENV: docker
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+
+volumes:
+  agent-data:
