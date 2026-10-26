@@ -1,5 +1,7 @@
 # 🕵️🌐 Research Agent
 
+## Build your first Agentic Workflow using langgraph, then see it operate like an AI Automation system.
+
 A Python research agent that searches the public web, gathers evidence, synthesizes a concise answer, and returns source-backed results in a clean chat interface.
 
 This project is designed as a practical, reproducible prototype for learning how to build an AI research workflow using LangGraph, tool-based retrieval, and model adapters. It emphasizes clarity over abstraction so the agent behavior, state transitions, and source handling remain easy to understand and extend.
