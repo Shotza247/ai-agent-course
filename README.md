@@ -1,58 +1,184 @@
 # First Research Agent
 
-A reusable research-agent prototype built in Python for exploring public web content, synthesizing findings, and returning an answer with source links. It combines a Streamlit interface, a LangGraph workflow, web search/scraping tools, and a provider-neutral chat model layer.
+A Python research agent that searches the public web, gathers evidence, synthesizes a concise answer, and returns source-backed results in a clean chat interface.
 
-## What this project does
+This project is designed as a practical, reproducible prototype for learning how to build an AI research workflow using LangGraph, tool-based retrieval, and model adapters. It emphasizes clarity over abstraction so the agent behavior, state transitions, and source handling remain easy to follow.
 
-The agent can:
+## Why this project exists
 
-- accept a user question in a chat interface
-- search for public web sources using DuckDuckGo (without an API key)
-- retrieve and extract page content
-- validate that URLs are public and safe to access
-- build an evidence-backed prompt from the retrieved sources
-- generate a concise answer using a local or hosted model
-- attach authoritative source links in a collapsed `Sources` section
+This repo demonstrates a full research-agent loop:
 
-This is designed as a practical learning project and an extensible foundation for more advanced multi-agent research systems.
+- a user asks a question
+- the agent searches public web sources
+- it validates and extracts usable content
+- it prepares evidence-backed prompts
+- it asks a model for a summary
+- it formats the final response with source links
 
-## Current flow
+It is ideal for experimentation, teaching, and extending into a more advanced multi-agent research system.
 
-```text
-Streamlit UI
-  -> LocalChatAgent
-     -> LangGraph research workflow
-        -> WebResearchTools (search, retrieve, extract)
-        -> ResearchSynthesisSkill
-        -> ChatModel adapter
-           -> local Transformers pipeline
-           or Hugging Face Inference Providers
+## At a glance
+
+- Python-first implementation
+- LangGraph-driven workflow orchestration
+- Streamlit interface for quick interaction
+- Local or hosted model backend support
+- Public-source research and extraction tools
+- Developer-friendly architecture with explicit state and graph definitions
+
+## Workflow overview
+
+```mermaid
+flowchart TD
+    A[User asks a question] --> B[search_sources]
+    B --> C{Sources found?}
+    C -- No --> D[handle_no_sources]
+    D --> E[Return fallback reply]
+    C -- Yes --> F[prepare_evidence]
+    F --> G[synthesize_answer]
+    G --> H[finalize_answer]
+    H --> I[Return final answer + sources]
 ```
 
-The architecture is documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), and the repository layout is described in [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md).
+This is the runtime graph built with `StateGraph` in `src/first_agent/workflows/research.py`.
 
-## Key features
+## Beginner-friendly: how the graph is built
 
-- Research workflow orchestration with LangGraph
-- Provider-neutral model abstraction for local and hosted inference
-- Reusable synthesis and formatting logic via `ResearchSynthesisSkill`
-- Web search and retrieval using public HTTP endpoints
-- Safe URL validation and redirect handling
-- Short-term workflow checkpoints and a namespaced long-term memory contract
-- Unit tests covering adapters, workflow behavior, tool integration, and resilience paths
+The graph is intentionally simple and readable. Each node has one role, and each edge moves the workflow forward.
 
-## Project goals
+```python
+builder = StateGraph(ResearchState)
+builder.add_node("search_sources", self._search_sources)
+builder.add_node("prepare_evidence", self._prepare_evidence)
+builder.add_node("synthesize_answer", self._synthesize_answer)
+builder.add_node("finalize_answer", self._finalize_answer)
+builder.add_node("handle_no_sources", self._handle_no_sources)
 
-This repo is intended to demonstrate how to build a research-oriented agent with clear boundaries between:
+builder.add_edge(START, "search_sources")
+builder.add_conditional_edges(
+    "search_sources",
+    self._route_after_search,
+    {"sources_found": "prepare_evidence", "no_sources": "handle_no_sources"},
+)
+builder.add_edge("prepare_evidence", "synthesize_answer")
+builder.add_edge("synthesize_answer", "finalize_answer")
+builder.add_edge("finalize_answer", END)
+builder.add_edge("handle_no_sources", END)
+```
 
-- user interface (`apps/`)
-- orchestration (`src/first_agent/workflows/`)
-- model adapters (`src/first_agent/models/`)
-- tool implementations (`src/first_agent/tools/`)
-- prompt and synthesis logic (`src/first_agent/skills/`, `src/first_agent/prompts/`)
-- memory (`src/first_agent/memory/`)
+### Nodes
 
-The long-term direction includes FastAPI transport and future MCP-style tool boundaries, as described in the docs.
+- `search_sources`: searches the web and collects public sources
+- `prepare_evidence`: converts the sources into a synthesis prompt
+- `synthesize_answer`: asks the model to summarize the evidence
+- `finalize_answer`: formats the final answer and appends sources
+- `handle_no_sources`: returns a controlled fallback response when research fails
+
+### State
+
+The workflow state is defined in `src/first_agent/workflows/state.py`:
+
+```python
+class ResearchState(TypedDict):
+    chat_history: list[ChatMessage]
+    user_input: str
+    max_new_tokens: int
+    max_sources: int
+    sources: list[ResearchSourceState]
+    research_prompt: str
+    summary: str
+    reply: str
+    updated_history: list[ChatMessage]
+    error: NotRequired[str | None]
+```
+
+This state is retained across the graph run via LangGraph checkpoints and a thread-scoped config.
+
+### Edges and conditional routing
+
+The most important routing decision happens after `search_sources`:
+
+```python
+@staticmethod
+def _route_after_search(state: ResearchState) -> str:
+    return "sources_found" if state["sources"] else "no_sources"
+```
+
+If research returns sources, the workflow continues through the evidence and synthesis path. If not, it takes the fallback path and ends early with a user-friendly message.
+
+## Technical architecture
+
+### UML-style architecture overview
+
+```mermaid
+classDiagram
+    class LocalChatAgent
+    class ResearchWorkflow
+    class WebResearchTools
+    class ResearchSynthesisSkill
+    class ChatModel
+    class ResearchState
+
+    LocalChatAgent --> ResearchWorkflow
+    ResearchWorkflow --> WebResearchTools
+    ResearchWorkflow --> ResearchSynthesisSkill
+    ResearchWorkflow --> ChatModel
+    ResearchWorkflow --> ResearchState
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant A as LocalChatAgent
+    participant W as ResearchWorkflow
+    participant T as WebResearchTools
+    participant M as ChatModel
+
+    U->>A: Ask question
+    A->>W: run(chat_history, user_input, max_sources)
+    W->>T: search(user_input)
+    T-->>W: list of sources
+    W->>W: route_after_search()
+    W->>W: build research_prompt
+    W->>M: generate(prompt)
+    M-->>W: summary
+    W->>W: format_reply(summary, sources)
+    W-->>A: reply + updated_history
+    A-->>U: Final answer with sources
+```
+
+## Project structure
+
+```text
+ai-agent-course/
+├── apps/                         # Streamlit and future client interfaces
+├── src/first_agent/
+│   ├── agents/                   # Agent facades and composition logic
+│   ├── workflows/                # LangGraph state, nodes, edges, and routing
+│   ├── memory/                   # Short-term and long-term memory contracts
+│   ├── skills/                   # Research and synthesis behaviors
+│   ├── prompts/                  # Prompt assembly
+│   ├── config/                   # Default configuration values
+│   ├── models/                   # Provider-neutral model adapters
+│   ├── tools/                    # Search and scraping tools
+│   ├── agent.py                  # Backward-compatible public import
+│   └── __init__.py
+├── tests/                        # Deterministic unit and boundary tests
+├── docs/                         # Architecture and operational guidance
+├── logs/                         # Runtime and diagnostic logs
+├── assets/                       # Static assets for future use
+├── mcp/                          # Future MCP-related setup
+├── skills/                       # Future reusable skill modules
+├── tools/                        # Future standalone utility tools
+├── first_agent.py                # Terminal entry point
+├── requirements.txt
+├── .env.example
+├── README.md
+├── audit_log.md
+└── ...
+```
 
 ## Setup
 
@@ -63,34 +189,34 @@ py -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
 
-For local inference, install the appropriate PyTorch build first. For a CPU-only machine:
-
-```powershell
-pip install torch --index-url https://download.pytorch.org/whl/cpu
-```
-
-Then install the project dependencies:
+Install the project dependencies:
 
 ```powershell
 pip install -r requirements.txt
 ```
 
-Copy `.env.example` to `.env` and set the model backend you want to use.
+For local GPU/CPU inference, install a compatible PyTorch build first if required:
 
-## Model backends
+```powershell
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+```
 
-### Local Transformers inference
+Create a local environment file:
 
-This runs the model on the local machine:
+```powershell
+copy .env.example .env
+```
+
+### Model backends
+
+#### Local inference
 
 ```dotenv
 CHAT_MODEL_BACKEND=local
 HF_MODEL_ID=HuggingFaceTB/SmolLM2-360M-Instruct
 ```
 
-### Hosted Hugging Face inference
-
-This sends requests through Hugging Face Inference Providers:
+#### Hosted inference
 
 ```dotenv
 CHAT_MODEL_BACKEND=huggingface
@@ -100,27 +226,29 @@ HF_INFERENCE_PROVIDER=featherless-ai
 HF_INFERENCE_TIMEOUT=60
 ```
 
-`HF_TOKEN` is required for hosted inference and must never be committed. It is optional in local mode unless the selected model is gated or private. Provider and model availability can change, so verify both on the Hugging Face model page before switching configuration.
+For hosted mode, keep `HF_TOKEN` out of version control. The secret should live in `.env` and should never be committed.
 
-Note: restart Streamlit whenever `.env` changes because the process keeps the environment and cached agent resources it started with.
+## Run
 
-## Run the app
-
-Run the Streamlit research UI:
+### Streamlit UI
 
 ```powershell
 python -m streamlit run apps/streamlit_app.py --server.port=8503 --server.fileWatcherType=none
 ```
 
-Open `http://localhost:8503`, enter a question, and choose the number of sources. The agent searches public webpages, synthesizes a concise answer, and places the authoritative links inside a collapsed **Sources** section.
+Then open:
 
-## Run the terminal interface
+```text
+http://localhost:8503
+```
+
+### Terminal interface
 
 ```powershell
 py first_agent.py
 ```
 
-## Verification
+## Validation and reproducibility
 
 ```powershell
 python -m unittest discover -s tests -v
@@ -128,66 +256,30 @@ python -m compileall first_agent.py apps src tests
 git diff --check
 ```
 
-The current test suite covers:
-
-- model adapters
-- backend selection
-- hosted request mapping
-- empty and unreachable provider responses
-- search-result mapping
-- DNS recovery
-- HTML extraction
-- public-URL enforcement
-- agent-tool integration
-- chat history
-- citation cleanup
-- workflow routing
-- checkpointed short-term state
-- namespaced long-term memory
-
-Live search and hosted inference are smoke-tested separately because public services, account credits, and provider availability are not deterministic.
-
-## Project structure
-
-```text
-ai-agent-course/
-├── apps/                         # Streamlit and future interface entry points
-├── src/first_agent/
-│   ├── agents/                   # Public agent facades
-│   ├── workflows/                # LangGraph state, nodes, routing, and edges
-│   ├── memory/                   # Short-term checkpoints and long-term memory stores
-│   ├── skills/                   # Reusable research behaviors and synthesis rules
-│   ├── prompts/                  # Prompt construction
-│   ├── config/                   # Code-level defaults
-│   ├── models/                   # Model contract, factory, and adapters
-│   ├── tools/                    # Web search and scraping tools
-│   ├── agent.py                  # Compatibility import path
-│   └── __init__.py
-├── tests/                        # Deterministic unit and integration-boundary tests
-├── docs/                         # Architecture and operations docs
-├── logs/                         # Runtime, crash, replay, and test logs
-├── assets/                       # Future images, docs, and static assets
-├── skills/                       # Future distributable skill definitions
-├── mcp/                          # Future MCP server config and setup
-├── tools/                        # Future standalone tool adapters and scripts
-├── first_agent.py                # CLI entry point
-├── requirements.txt
-├── .env.example
-├── README.md
-├── audit_log.md                  # Chronological implementation and incident trail
-└── ...
-```
+These commands provide a reproducible baseline for verification. The project also includes deterministic tests covering model adapters, source retrieval, fallback behavior, routing, memory, and workflow boundaries.
 
 ## Reliability notes
 
-- Search uses DDGS without an API key, direct HTTP retrieval, and Jina Reader as a fallback.
-- The scraper allows only public HTTP(S) targets and validates redirects to reduce SSRF risk.
-- Search DNS failures degrade to a recoverable no-sources response.
-- Hosted provider DNS, timeout, and HTTP failures return a concise retry message.
-- The local model is useful for lightweight development but generally produces weaker research summaries than a hosted model.
+- Search uses public web retrieval and safe URL validation
+- Redirects and non-public destinations are rejected
+- DNS and provider failures degrade to stable fallback responses
+- Local models are useful for development, but hosted models generally produce stronger summary quality
+- The project keeps orchestration, tools, prompts, and model adapters separately so they can be replaced independently
 
-See [`docs/OPERATIONS.md`](docs/OPERATIONS.md) for startup, troubleshooting, log, and Hugging Face usage-monitoring procedures.
+## Why it stands out
 
-## Repository status
+This project is more than a toy chatbot. It demonstrates a clean, practical architecture for building research-capable AI systems:
 
-This project is a working prototype with a clear separation of concerns and a documented architecture. It is primarily intended for learning, experimentation, and further extension into a more formal research or multi-agent system.
+- explicit workflow graph instead of hidden orchestration
+- modular tool boundaries instead of monolithic logic
+- stateful execution with LangGraph checkpoints
+- provider-neutral model adapters for future swap-in of different LLM backends
+- production-minded safety checks around web access and private/public URL handling
+
+## Future direction
+
+The docs outline the next evolution toward FastAPI transport, MCP-style tools, and a more advanced multi-agent research system. The current repo focuses on establishing the core pattern clearly and reproducibly before scaling complexity.
+
+## Final note
+
+This project is intentionally simple enough to understand quickly, but structured enough to grow into a real research product. It is designed for learning, experimentation, and extension without sacrificing clarity or control.
