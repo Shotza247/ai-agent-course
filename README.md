@@ -1,4 +1,4 @@
-# First Research Agent
+# 🕵️🌐 Research Agent
 
 A Python research agent that searches the public web, gathers evidence, synthesizes a concise answer, and returns source-backed results in a clean chat interface.
 
