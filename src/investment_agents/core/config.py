@@ -103,6 +103,9 @@ class Settings:
     market_cache_ttl_seconds: int = field(
         default_factory=lambda: _int_env("MARKET_CACHE_TTL_SECONDS", "900")
     )
+    provider_request_timeout_seconds: int = field(
+        default_factory=lambda: _int_env("PROVIDER_REQUEST_TIMEOUT_SECONDS", "10")
+    )
     reporting_currency: str = field(default_factory=lambda: _upper_env("REPORTING_CURRENCY", "USD"))
     static_fx_rates: dict[str, str] | None = None
     max_enrichment_symbols: int = field(

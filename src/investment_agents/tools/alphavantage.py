@@ -83,7 +83,7 @@ class AlphaVantageResearchTool:
                         "tickers": provider_symbol,
                         "apikey": self.settings.alphavantage_api_key,
                     },
-                    timeout=20,
+                    timeout=(3.05, self.settings.provider_request_timeout_seconds),
                 )
                 response.raise_for_status()
             except requests.RequestException as exc:

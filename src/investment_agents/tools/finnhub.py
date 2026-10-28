@@ -78,7 +78,7 @@ class FinnhubInvestmentTool:
                 response = requests.get(
                     f"{self.base_url}/quote",
                     params={"symbol": provider_symbol, "token": self.settings.finnhub_api_key},
-                    timeout=20,
+                    timeout=(3.05, self.settings.provider_request_timeout_seconds),
                 )
                 response.raise_for_status()
             except requests.RequestException as exc:
