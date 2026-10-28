@@ -255,3 +255,10 @@ if prompt := st.chat_input("Ask about tickers, your ledger, news, sentiment, or 
                         {"role": "assistant", "content": f"API error: {exc}"},
                     ]
                     st.error(f"API error: {exc}")
+                except Exception as exc:
+                    st.session_state.chat = [
+                        *st.session_state.chat,
+                        {"role": "user", "content": prompt},
+                        {"role": "assistant", "content": "The app could not render this response."},
+                    ]
+                    st.error(f"Unexpected response error: {exc}")
