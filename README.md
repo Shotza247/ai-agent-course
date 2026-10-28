@@ -94,6 +94,12 @@ source status. In Streamlit, check the sidebar API URL, send the same prompts, a
 inspect the Trace tab. Readiness means settings are present, not that credentials
 or live provider access have been validated.
 
+The first uncached provider request can take longer than a repeat request because
+the result is then cached in DuckDB. Configure `PROVIDER_REQUEST_TIMEOUT_SECONDS`
+in `.env` to limit provider connection/read waits; it defaults to `10`. If a
+response cannot be rendered, Streamlit displays an error instead of leaving the
+page blank. See [provider configuration](docs/SETUP.md#storage-and-reporting).
+
 ## Docker Status
 
 Docker files exist, but a successful full build has not been verified in the latest

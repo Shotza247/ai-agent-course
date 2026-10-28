@@ -62,6 +62,10 @@ not implemented adapters. Sheets access does not imply general Drive document ac
 
 - `STORAGE_DB_PATH`: DuckDB file, default `data/investment_agents.duckdb`.
 - `MARKET_CACHE_TTL_SECONDS`: quote/news freshness window, default 900.
+- `PROVIDER_REQUEST_TIMEOUT_SECONDS`: maximum read wait for each uncached provider
+  request, default 10. The client also uses a 3.05-second connection timeout.
+  These constrain connection and idle reads, but cannot impose a strict total
+  wall-clock limit on every DNS or provider-side failure mode.
 - `REPORTING_CURRENCY`: default USD.
 - `STATIC_FX_RATES`: manual rates into the reporting currency, for example
   `GBP=1.25,ZAR=0.055`. These are illustrative values, not live exchange rates.

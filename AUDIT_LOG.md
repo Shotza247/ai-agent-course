@@ -18,6 +18,29 @@ and setup, use [README.md](README.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTU
 - Retained this dated audit history; it is not a current architecture specification.
 - Scope: documentation only. No runtime modules or credentials changed.
 
+## 2026-09-27 - Initial Live Market Query Delay
+
+- Status: partially fixed; service restart and browser verification remain required.
+- Symptom: Streamlit appeared blank while processing a ticker research request.
+- Scope: Streamlit `/chat` request and live Finnhub/Alpha Vantage tools.
+- Evidence:
+  - `.env` has Finnhub and Alpha Vantage keys set; `/tools/readiness` reports both ready.
+  - `Research AAPL news sentiment` reached the API. Its trace recorded a Finnhub quote
+    after roughly 62 seconds and Alpha Vantage news roughly two seconds later.
+  - A repeat request completed in about four seconds using cached provider payloads.
+- Changes:
+  - Added `PROVIDER_REQUEST_TIMEOUT_SECONDS` with a default 10-second read limit and
+    a 3.05-second provider connection timeout.
+  - Added Streamlit fallback handling for unexpected response-rendering errors.
+- Verification:
+  - API health and tool readiness returned HTTP 200 before the source changes.
+  - Repeat AAPL `/chat` request completed successfully from cache.
+  - Full regression run was interrupted after no further output; it did not finish,
+    so no new full-suite pass is claimed.
+- Follow-up:
+  - Restart API and Streamlit, verify the first uncached ticker request, and inspect
+    its trace. If provider calls still exceed the expected window, capture API logs.
+
 Format (each entry):
 - ID: unique short id
 - Date: ISO 8601 timestamp (local)
