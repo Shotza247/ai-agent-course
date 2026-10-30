@@ -1,4 +1,4 @@
-# 🕵️🌐 Research Agent
+# 🕵️🌐 Simple Research Agent Workflow
 
 ## Build your first Agentic Workflow using langgraph, then see it operate like an AI Automation system.
 
